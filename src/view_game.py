@@ -8,6 +8,8 @@ import timeit
 import math
 import os
 
+import elements
+import connection
 
 SCREEN_TITLE = "Rod of Madness"
 
@@ -23,30 +25,11 @@ F5 - Make DampedSpring mode
 F6 - No gravity or friction
 F7 - Layout, no gravity, lots of friction
 F8 - Gravity, little bit of friction
+F9 - Fullscreen on/off
 
 Right-click, fire coin
 
 """
-
-
-class PhysicsSprite(arcade.Sprite):
-    def __init__(self, pymunk_shape, filename):
-        super().__init__(filename, center_x=pymunk_shape.body.position.x, center_y=pymunk_shape.body.position.y)
-        self.pymunk_shape = pymunk_shape
-
-
-class CircleSprite(PhysicsSprite):
-    def __init__(self, pymunk_shape, filename):
-        super().__init__(pymunk_shape, filename)
-        self.width = pymunk_shape.radius * 2
-        self.height = pymunk_shape.radius * 2
-
-
-class CrateSprite(PhysicsSprite):
-    def __init__(self, pymunk_shape, filename, width, height):
-        super().__init__(pymunk_shape, filename)
-        self.width = width
-        self.height = height
 
 
 class ViewGame(arcade.View):
@@ -69,7 +52,7 @@ class ViewGame(arcade.View):
         self.space.gravity = (0.0, -900.0)
 
         # Lists of sprites or lines
-        self.sprite_list: arcade.SpriteList[PhysicsSprite] = arcade.SpriteList()
+        self.sprite_list: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
         self.static_lines = []
 
         # Used for dragging shapes around with the mouse
@@ -97,6 +80,9 @@ class ViewGame(arcade.View):
         shape.friction = 10
         self.space.add(shape, body)
         self.static_lines.append(shape)
+
+    def on_setup(self):
+        pass
 
     def on_draw(self):
         """
@@ -142,97 +128,25 @@ class ViewGame(arcade.View):
         output = f"Physics: {self.physics}"
         arcade.draw_text(output, 20, self.window.height - 80, arcade.color.WHITE)
 
-    def make_crate(self, x, y):
-        size = 45
-        mass = 12.0
-        moment = pymunk.moment_for_box(mass, (size, size))
-        body = pymunk.Body(mass, moment)
-        body.position = pymunk.Vec2d(x, y)
-        shape = pymunk.Poly.create_box(body, (size, size))
-        shape.friction = 0.3
-        self.space.add(body, shape)
-
-        sprite = CrateSprite(shape, ":resources:images/tiles/boxCrate_double.png", width=size, height=size)
-        self.sprite_list.append(sprite)
-
-    def make_baloon(self, x, y):
-        size = 20
-        mass = 3.0
-        moment = pymunk.moment_for_circle(mass, 0, size, (0, 0))
-        body = pymunk.Body(mass, moment)
-        body.position = pymunk.Vec2d(x, y)
-        shape = pymunk.Circle(body, size, pymunk.Vec2d(0, 0))
-        shape.friction = 0.3
-        self.space.add(body, shape)
-
-        sprite = CircleSprite(shape, ":resources:images/items/coinGold.png")
-        self.sprite_list.append(sprite)
-
-    def make_pin_joint(self, x, y):
-        shape_selected = self.get_shape(x, y)
-        if shape_selected is None:
-            return
-
-        if self.shape_1 is None:
-            print("Shape 1 Selected")
-            self.shape_1 = shape_selected
-        elif self.shape_2 is None:
-            print("Shape 2 Selected")
-            self.shape_2 = shape_selected
-            joint = pymunk.PinJoint(self.shape_1.shape.body, self.shape_2.shape.body)
-            self.space.add(joint)
-            self.joints.append(joint)
-            self.shape_1 = None
-            self.shape_2 = None
-            print("Joint Made")
-
-    def make_damped_spring(self, x, y):
-        shape_selected = self.get_shape(x, y)
-        if shape_selected is None:
-            return
-
-        if self.shape_1 is None:
-            print("Shape 1 Selected")
-            self.shape_1 = shape_selected
-        elif self.shape_2 is None:
-            print("Shape 2 Selected")
-            self.shape_2 = shape_selected
-            joint = pymunk.DampedSpring(self.shape_1.shape.body, self.shape_2.shape.body, (0, 0), (0, 0), 45, 300, 30)
-            self.space.add(joint)
-            self.joints.append(joint)
-            self.shape_1 = None
-            self.shape_2 = None
-            print("Joint Made")
-
-    def get_shape(self, x, y):
-        # See if we clicked on anything
-        shape_list = self.space.point_query((x, y), 1, pymunk.ShapeFilter())
-
-        # If we did, remember what we clicked on
-        if len(shape_list) > 0:
-            shape = shape_list[0]
-        else:
-            shape = None
-
-        return shape
-
     def on_mouse_press(self, x, y, button, modifiers):
 
         if button == 1 and self.mode == "Drag":
             self.last_mouse_position = x, y
-            self.shape_being_dragged = self.get_shape(x, y)
+            self.shape_being_dragged = connection.get_shape(x, y, self.space)
 
         elif button == 1 and self.mode == "Make Crate":
-            self.make_crate(x, y)
+            elements.make_crate(x, y, self.space, self.sprite_list)
 
         elif button == 1 and self.mode == "Make Ballon":
-            self.make_baloon(x, y)
+            elements.make_ballon(x, y, self.space, self.sprite_list)
 
         elif button == 1 and self.mode == "Make PinJoint":
-            self.make_pin_joint(x, y)
+            self.shape_1, self.shape_2 = connection.make_pin_joint_connection(x, y, self.space, self.joints,
+                                                                              self.shape_1, self.shape_2)
 
         elif button == 1 and self.mode == "Make DampedSpring":
-            self.make_damped_spring(x, y)
+            self.shape_1, self.shape_2 = connection.make_damped_spring_connection(x, y, self.space, self.joints,
+                                                                                  self.shape_1, self.shape_2)
 
         elif button == 4:
             # With right mouse button, shoot a heavy coin fast.
@@ -246,7 +160,7 @@ class ViewGame(arcade.View):
             shape.friction = 0.3
             self.space.add(body, shape)
 
-            sprite = CircleSprite(shape, ":resources:images/items/coinGold.png")
+            sprite = elements.CircleSprite(shape, ":resources:images/items/coinGold.png")
             self.sprite_list.append(sprite)
 
     def on_mouse_release(self, x, y, button, modifiers):

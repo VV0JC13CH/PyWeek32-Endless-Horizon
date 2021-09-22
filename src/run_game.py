@@ -104,7 +104,7 @@ class GlobalWindow(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-        if key == arcade.key.F:
+        if key == arcade.key.F9:
             self.switch_screen_mode()
         if key == arcade.key.ESCAPE:
             self.go_to_menu()
