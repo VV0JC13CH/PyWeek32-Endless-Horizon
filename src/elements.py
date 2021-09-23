@@ -2,6 +2,23 @@ import arcade
 import pymunk
 
 
+def make_duck(x, y, space, sprite_list):
+    # With right mouse button, shoot a heavy coin fast.
+    mass = 500
+    radius = 10
+    inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
+    body = pymunk.Body(mass, inertia)
+    body.position = x, y
+    # Speed of duck
+    body.velocity = -1200, 0
+    shape = pymunk.Circle(body, radius, pymunk.Vec2d(0, 0))
+    shape.friction = 0.3
+    # Make duck zero-gravity:
+    body.velocity_func = (body, space.gravity, space.damping)
+    space.add(body, shape)
+    sprite = CircleSprite(shape, ":resources:images/items/coinGold.png")
+    sprite_list.append(sprite)
+
 def make_ballon(x, y, space, sprite_list):
     size = 20
     mass = 3.0
