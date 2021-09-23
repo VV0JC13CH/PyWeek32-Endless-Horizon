@@ -140,28 +140,16 @@ class ViewGame(arcade.View):
         elif button == 1 and self.mode == "Make Ballon":
             elements.make_ballon(x, y, self.space, self.sprite_list)
 
-        elif button == 1 and self.mode == "Make PinJoint":
+        elif button == 1 and self.mode == "Make Connection by PinJoint":
             self.shape_1, self.shape_2 = connection.make_pin_joint_connection(x, y, self.space, self.joints,
                                                                               self.shape_1, self.shape_2)
 
-        elif button == 1 and self.mode == "Make DampedSpring":
+        elif button == 1 and self.mode == "Make Connection by DampedSpring":
             self.shape_1, self.shape_2 = connection.make_damped_spring_connection(x, y, self.space, self.joints,
                                                                                   self.shape_1, self.shape_2)
 
         elif button == 4:
-            # With right mouse button, shoot a heavy coin fast.
-            mass = 60
-            radius = 10
-            inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
-            body = pymunk.Body(mass, inertia)
-            body.position = x, y
-            body.velocity = 2000, 0
-            shape = pymunk.Circle(body, radius, pymunk.Vec2d(0, 0))
-            shape.friction = 0.3
-            self.space.add(body, shape)
-
-            sprite = elements.CircleSprite(shape, ":resources:images/items/coinGold.png")
-            self.sprite_list.append(sprite)
+            elements.make_duck(x, y, self.space, self.sprite_list)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == 1:
@@ -204,9 +192,9 @@ class ViewGame(arcade.View):
     def on_update(self, delta_time):
         start_time = timeit.default_timer()
 
-        # Check for balls that fall off the screen
+        # Check for sprites that are behind the screen
         for sprite in self.sprite_list:
-            if sprite.pymunk_shape.body.position.y < 0:
+            if sprite.pymunk_shape.body.position.x > self.window.width:
                 # Remove balls from physics space
                 self.space.remove(sprite.pymunk_shape, sprite.pymunk_shape.body)
                 # Remove balls from physics list

@@ -45,5 +45,5 @@ def make_damped_spring_connection(x, y, space, joints, shape_1, shape_2):
         joints.append(joint)
         shape_1 = None
         shape_2 = None
-        print("Joint Connection Made")
+        print("Spring Connection Made")
     return shape_1, shape_2
