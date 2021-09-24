@@ -16,6 +16,8 @@ crates_textures = [arcade.load_texture(path_to_string('gfx', 'crate16x16a.png'),
                    arcade.load_texture(path_to_string('gfx', 'crate16x16c.png'), width=16, height=16),
                    arcade.load_texture(path_to_string('gfx', 'crate32x32.png'), width=32, height=32)]
 
+sea_textures = [arcade.load_texture(path_to_string('gfx', 'sea96x64.png'), width=96, height=64)]
+
 # Pallet: https://colorswall.com/palette/24326/
 backgrounds = [
     (225, 245, 254),

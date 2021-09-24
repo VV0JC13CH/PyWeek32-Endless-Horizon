@@ -60,6 +60,8 @@ class ViewGame(arcade.View):
 
         # Lists of sprites or lines
         self.sprite_list_pymunk = None
+        self.sprite_list_static = None
+        self.sprite_list_sea = None
         self.static_lines_pymunk = []
         self.floor_height = 0
 
@@ -99,6 +101,9 @@ class ViewGame(arcade.View):
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
         self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
+        self.sprite_list_static = arcade.SpriteList()
+        self.sprite_list_sea = arcade.SpriteList()
+
         self.static_lines_pymunk = []
 
         # Timer
@@ -113,17 +118,13 @@ class ViewGame(arcade.View):
         self.view_left = 0
         self.view_bottom = 0
 
-        # Create the floor
-        self.floor_height = 120.0
-        body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        shape = pymunk.Segment(body, (0.0, self.floor_height), (self.window.width, self.floor_height), 0.0)
-        shape.friction = 10
-        self.space.add(shape, body)
-        self.static_lines_pymunk.append(shape)
-
         # Test camera:
         # Update camera:
-        elements.make_duck(self.window.width-50, self.window.height / 2, self.space, self.sprite_list_pymunk)
+        elements.make_duck(self.window.width - 50, self.window.height / 2, self.space, self.sprite_list_pymunk)
+
+        # Setup sea:
+        elements.setup_sea(self.window, self.space,
+                           self.sprite_list_sea, self.static_lines_pymunk)
 
     def on_draw(self):
         """
@@ -141,6 +142,8 @@ class ViewGame(arcade.View):
 
         # Draw all the sprites
         self.sprite_list_pymunk.draw()
+        self.sprite_list_static.draw()
+        self.sprite_list_sea.draw()
 
         # Draw the lines that aren't sprites
         for line in self.static_lines_pymunk:
@@ -148,14 +151,17 @@ class ViewGame(arcade.View):
 
             pv1 = body.position + line.a.rotated(body.angle)
             pv2 = body.position + line.b.rotated(body.angle)
-            arcade.draw_line(pv1.x, pv1.y, pv2.x, pv2.y, arcade.color.BLUE, 2)
+            arcade.draw_line(pv1.x, pv1.y, pv2.x, pv2.y, arcade.color.LIGHT_SKY_BLUE, 2)
 
-        for joint in self.joints:
-            color = arcade.color.WHITE
-            if isinstance(joint, pymunk.DampedSpring):
-                color = arcade.color.DARK_GREEN
-            arcade.draw_line(joint.a.position.x, joint.a.position.y, joint.b.position.x, joint.b.position.y, color, 3)
+        if self.mode_developer:
+            for joint in self.joints:
+                color = arcade.color.WHITE
+                if isinstance(joint, pymunk.DampedSpring):
+                    color = arcade.color.DARK_GREEN
+                arcade.draw_line(joint.a.position.x, joint.a.position.y, joint.b.position.x, joint.b.position.y, color,
+                                 3)
 
+        # GUI BELOW:
         # Select the (unscrolled) camera for our GUI
         self.camera_gui.use()
 
@@ -271,11 +277,18 @@ class ViewGame(arcade.View):
 
         # Check for sprites that are behind the screen
         for sprite in self.sprite_list_pymunk:
-            if sprite.pymunk_shape.body.position.x > self.window.width * 3:
-                # Remove balls from physics space
-                self.space.remove(sprite.pymunk_shape, sprite.pymunk_shape.body)
-                # Remove balls from physics list
-                sprite.kill()
+            if sprite.pymunk_shape.body.position.x > self.camera_sprites.position[0] + self.window.width:
+                elements.kill_old_instances(sprite, self.space)
+        # Same for lines
+        for sprite in self.sprite_list_static:
+            if sprite.pymunk_shape.body.position.x > self.camera_sprites.position[0] + self.window.width:
+                elements.kill_old_instances(sprite, self.space)
+
+        # Sea chunks updates:
+        for sprite in self.sprite_list_sea:
+            if sprite.center_x >= self.camera_sprites.position[0] + self.window.width * 2 + sprite.width:
+                elements.update_sea(sprite, self.window, self.space, self.static_lines_pymunk)
+
 
         # Update physics
         self.space.step(1 / 80.0)
@@ -294,18 +307,19 @@ class ViewGame(arcade.View):
             if len(sprite.textures) > 1:
                 sprite.anim_speed_counter -= 1
                 if sprite.anim_speed_counter == 0:
-                    if sprite.cur_texture_index == len(sprite.textures)-1:
+                    if sprite.cur_texture_index == len(sprite.textures) - 1:
                         sprite.cur_texture_index = 0
                     else:
                         sprite.cur_texture_index += 1
                 elif sprite.anim_speed_counter < 0:
                     sprite.anim_speed_counter = sprite.anim_speed
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
-        self.timer.on_update(delta_time)
         sky.change_sky(self.timer.game_hour)
         self.scroll_to_player(self.sprite_list_pymunk[0])
 
         # Save the time it took to do this.
+        self.timer.on_update(delta_time)
+
         self.processing_time = timeit.default_timer() - start_time
 
     def scroll_to_player(self, target_sprite):
