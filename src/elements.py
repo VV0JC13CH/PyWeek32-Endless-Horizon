@@ -7,23 +7,6 @@ import assets
 def zero_gravity(body, gravity, damping, dt):
     pymunk.Body.update_velocity(body, (0,0), damping, dt)
 
-# def make_duck(x, y, space, sprite_list):
-#     # With right mouse button, shoot a heavy coin fast.
-#     mass = 500
-#     radius = 32
-#     inertia = pymunk.moment_for_circle(mass, 0, radius, (0, 0))
-#     body = pymunk.Body(mass, inertia)
-#     body.position = x, y
-#     # Speed of duck
-#     body.velocity = -1200, 0
-#     shape = pymunk.Circle(body, radius, pymunk.Vec2d(0, 0))
-#     shape.friction = 0.3
-#     # Make duck zero-gravity:
-#     body.velocity_func = zero_gravity
-#     space.add(body, shape)
-#     sprite = CircleSprite(shape, "gfx/duck96x32_1.png")
-#     sprite_list.append(sprite)
-
 
 def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None):
     # With right mouse button, shoot a heavy coin fast.
@@ -35,7 +18,7 @@ def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None):
     body = pymunk.Body(mass, moment)
     body.position = pymunk.Vec2d(x, y)
     # Speed of duck
-    body.velocity = -1200, 0
+    body.velocity = -600, 0
     shape = pymunk.Poly.create_box(body, (size, size))
     shape.friction = 0.3
     # Make duck zero-gravity:

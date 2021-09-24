@@ -22,8 +22,11 @@ class ViewMenu(arcade.View):
         self.v_box = arcade.gui.UIBoxLayout()
 
         # Create the buttons
-        start_button = arcade.gui.UIFlatButton(text="Play game", width=200)
+        start_button = arcade.gui.UIFlatButton(text="New game", width=200)
         self.v_box.add(start_button.with_space_around(bottom=20))
+
+        resume_button = arcade.gui.UIFlatButton(text="Resume game", width=200)
+        self.v_box.add(resume_button.with_space_around(bottom=20))
 
         scores_button = arcade.gui.UIFlatButton(text="Leaderboards", width=200)
         self.v_box.add(scores_button.with_space_around(bottom=20))
@@ -36,6 +39,7 @@ class ViewMenu(arcade.View):
 
         # assign buttons:
         start_button.on_click = self.on_click_start
+        resume_button.on_click = self.on_click_resume
         scores_button.on_click = self.on_click_scores
         settings_button.on_click = self.on_click_settings
         quit_button.on_click = self.on_click_quit
@@ -50,6 +54,12 @@ class ViewMenu(arcade.View):
 
     def on_click_start(self, event):
         print("Start:", event)
+        self.manager.disable()
+        arcade.get_window().view_game.on_setup()
+        arcade.get_window().show_view(arcade.get_window().view_game)
+
+    def on_click_resume(self, event):
+        print("Resume:", event)
         self.manager.disable()
         arcade.get_window().show_view(arcade.get_window().view_game)
 

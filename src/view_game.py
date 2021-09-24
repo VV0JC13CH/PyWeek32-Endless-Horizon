@@ -52,7 +52,7 @@ class ViewGame(arcade.View):
         self.space.gravity = (0.0, -900.0)
 
         # Lists of sprites or lines
-        self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
+        self.sprite_list_pymunk = None
         self.static_lines_pymunk = []
 
         # Used for dragging shapes around with the mouse
@@ -74,6 +74,14 @@ class ViewGame(arcade.View):
         self.physics = "Normal"
         self.mode = "Make Crate"
 
+    def on_setup(self):
+        self.mode_developer = True
+        self.space = pymunk.Space()
+        self.space.gravity = (0.0, -900.0)
+        self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
+        self.static_lines_pymunk = []
+        self.window.background_color = arcade.color.AERO_BLUE
+
         # Create the floor
         self.floor_height = 80
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -81,9 +89,6 @@ class ViewGame(arcade.View):
         shape.friction = 10
         self.space.add(shape, body)
         self.static_lines_pymunk.append(shape)
-
-    def on_setup(self):
-        pass
 
     def on_draw(self):
         """
@@ -113,21 +118,17 @@ class ViewGame(arcade.View):
                 color = arcade.color.DARK_GREEN
             arcade.draw_line(joint.a.position.x, joint.a.position.y, joint.b.position.x, joint.b.position.y, color, 3)
 
-        # arcade.draw_text(output, 10, 20, arcade.color.WHITE, 14)
         # Display timings
-        output = f"Processing time: {self.processing_time:.3f}"
-        arcade.draw_text(output, 20, self.window.height - 20, arcade.color.WHITE)
-
-        output = f"Drawing time: {self.draw_time:.3f}"
-        arcade.draw_text(output, 20, self.window.height - 40, arcade.color.WHITE)
-
-        self.draw_time = timeit.default_timer() - draw_start_time
-
-        output = f"Mode: {self.mode}"
-        arcade.draw_text(output, 20, self.window.height - 60, arcade.color.WHITE)
-
-        output = f"Physics: {self.physics}"
-        arcade.draw_text(output, 20, self.window.height - 80, arcade.color.WHITE)
+        if self.mode_developer:
+            output = f"Processing time: {self.processing_time:.3f}"
+            arcade.draw_text(output, 20, self.window.height - 20, arcade.color.WHITE)
+            output = f"Drawing time: {self.draw_time:.3f}"
+            arcade.draw_text(output, 20, self.window.height - 40, arcade.color.WHITE)
+            self.draw_time = timeit.default_timer() - draw_start_time
+            output = f"Mode: {self.mode}"
+            arcade.draw_text(output, 20, self.window.height - 60, arcade.color.WHITE)
+            output = f"Physics: {self.physics}"
+            arcade.draw_text(output, 20, self.window.height - 80, arcade.color.WHITE)
 
     def on_mouse_press(self, x, y, button, modifiers):
 
@@ -149,7 +150,7 @@ class ViewGame(arcade.View):
             self.shape_1, self.shape_2 = connection.make_damped_spring_connection(x, y, self.space, self.joints,
                                                                                   self.shape_1, self.shape_2)
 
-        elif button == 4:
+        elif button == 4 and self.mode_developer:
             elements.make_duck(x, y, self.space, self.sprite_list_pymunk)
 
     def on_mouse_release(self, x, y, button, modifiers):
@@ -165,32 +166,35 @@ class ViewGame(arcade.View):
             self.shape_being_dragged.shape.body.velocity = dx * 20, dy * 20
 
     def on_key_press(self, symbol: int, modifiers: int):
-        if symbol == arcade.key.F1:
-            self.mode = "Drag"
-        elif symbol == arcade.key.F2:
-            self.mode = "Make Crate"
-        elif symbol == arcade.key.F3:
-            self.mode = "Make Ballon"
-
-        elif symbol == arcade.key.F4:
-            self.mode = "Make Connection by PinJoint"
-        elif symbol == arcade.key.F5:
-            self.mode = "Make Connection by DampedSpring"
-
-        elif symbol == arcade.key.F6:
-            self.space.gravity = (0.0, 0.0)
-            self.space.damping = 1
-            self.physics = "Space gravity"
-        elif symbol == arcade.key.F7:
-            self.space.gravity = (0.0, 0.0)
-            self.space.damping = 0
-            self.physics = "Freeze gravity"
-        elif symbol == arcade.key.F8:
-            self.space.damping = 0.95
-            self.space.gravity = (0.0, -900.0)
-            self.physics = "Normal gravity"
-        elif symbol == arcade.key.F12:
+        if self.mode_developer:
+            if symbol == arcade.key.F1:
+                self.mode = "Drag"
+            elif symbol == arcade.key.F2:
+                self.mode = "Make Crate"
+            elif symbol == arcade.key.F3:
+                self.mode = "Make Ballon"
+            elif symbol == arcade.key.F4:
+                self.mode = "Make Connection by PinJoint"
+            elif symbol == arcade.key.F5:
+                self.mode = "Make Connection by DampedSpring"
+            elif symbol == arcade.key.F6:
+                self.space.gravity = (0.0, 0.0)
+                self.space.damping = 1
+                self.physics = "Space gravity"
+            elif symbol == arcade.key.F7:
+                self.space.gravity = (0.0, 0.0)
+                self.space.damping = 0
+                self.physics = "Freeze gravity"
+            elif symbol == arcade.key.F8:
+                self.space.damping = 0.95
+                self.space.gravity = (0.0, -900.0)
+                self.physics = "Normal gravity"
+        if symbol == arcade.key.F12:
             self.mode_developer = not self.mode_developer
+            if not self.mode_developer:
+                self.mode = "Play"
+            else:
+                self.mode = "Drag"
             print("Developer mode:", self.mode_developer)
 
     def on_update(self, delta_time):
@@ -228,7 +232,6 @@ class ViewGame(arcade.View):
                 elif sprite.anim_speed_counter < 0:
                     sprite.anim_speed_counter = sprite.anim_speed
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
-
 
         # Save the time it took to do this.
         self.processing_time = timeit.default_timer() - start_time
