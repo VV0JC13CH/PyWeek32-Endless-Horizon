@@ -7,6 +7,7 @@ python -m arcade.examples.pymunk_joint_builder
 import arcade
 import os
 
+import assets
 from view_game import ViewGame
 from view_menu import ViewMenu
 from view_settings import ViewSettings
@@ -48,7 +49,6 @@ class GlobalWindow(arcade.Window):
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
 
-        arcade.set_background_color(arcade.color.DARK_SLATE_GRAY)
 
         # views:
         self.view_game = None
@@ -65,6 +65,9 @@ class GlobalWindow(arcade.Window):
         self.view_game = ViewGame()
         self.view_menu = ViewMenu()
         self.view_settings = ViewSettings()
+
+        # background
+        self.background_color = assets.backgrounds[0]
 
     def on_resize(self, width, height):
         """ This method is automatically called when the window is resized. """

@@ -48,8 +48,6 @@ class ViewGame(arcade.View):
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
 
-        arcade.set_background_color(arcade.color.DARK_SLATE_GRAY)
-
         # -- Pymunk
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
@@ -87,8 +85,6 @@ class ViewGame(arcade.View):
         self.space.gravity = (0.0, -900.0)
         self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
         self.static_lines_pymunk = []
-        self.window.background_color = arcade.color.AERO_BLUE
-        print(arcade.color.AERO_BLUE)
 
         # Timer
         self.timer.on_setup()

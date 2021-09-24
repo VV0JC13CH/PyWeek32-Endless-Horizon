@@ -61,6 +61,8 @@ class ViewMenu(arcade.View):
     def on_click_resume(self, event):
         print("Resume:", event)
         self.manager.disable()
+        if not arcade.get_window().view_game.timer.game_hour_counter_started:
+            arcade.get_window().view_game.on_setup()
         arcade.get_window().show_view(arcade.get_window().view_game)
 
     def on_click_scores(self, event):
