@@ -92,6 +92,8 @@ class ViewGame(arcade.View):
 
         self.joints = []
 
+        self.game_started = False
+
         self.mode_developer = False
         self.physics = "Normal"
         self.mode = "Make Crate"
@@ -117,7 +119,6 @@ class ViewGame(arcade.View):
 
         # Timer
         self.timer.on_setup()
-        self.timer.start()
         # Camera
         self.camera_sprites = arcade.Camera(self.window.width, self.window.height)
         self.camera_gui = arcade.Camera(self.window.width, self.window.height)
@@ -291,6 +292,12 @@ class ViewGame(arcade.View):
             else:
                 self.mode = "Drag"
             print("Developer mode:", self.mode_developer)
+        elif symbol == arcade.key.SPACE:
+            if not self.game_started:
+                self.game_started = True
+                self.timer.start()
+                self.fisher.game_started = True
+                print("Game started!")
 
     def on_update(self, delta_time):
         start_time = timeit.default_timer()

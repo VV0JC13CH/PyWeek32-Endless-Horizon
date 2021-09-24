@@ -30,8 +30,9 @@ class Timer:
         """
         All the logic to move, and the game logic goes here.
         """
-        self.total_time += delta_time
-        self.game_cycle += delta_time
+        if self.game_hour_counter_started:
+            self.total_time += delta_time
+            self.game_cycle += delta_time
 
         # Calculate minutes
         minutes = int(self.total_time) // 60

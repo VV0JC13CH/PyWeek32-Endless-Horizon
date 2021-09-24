@@ -29,7 +29,7 @@ fisher_body_texture = arcade.load_texture(path_to_string('gfx', 'fisher_body66x5
 
 # Static fisher:
 fisher_static_textures = []
-for x in range(1,14,1):
+for x in range(1,19,1):
     texture = arcade.load_texture(path_to_string("gfx", "fisher_static"+str(x)+".png"))
     fisher_static_textures.append(texture)
 fisher_static_sprite = arcade.Sprite(texture=fisher_static_textures[0])
