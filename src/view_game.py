@@ -5,11 +5,13 @@ pyWeek 32 endless game
 import arcade
 import pymunk
 import timeit
+import timer
 import math
 import os
 
 import elements
 import connection
+import sky
 
 SCREEN_TITLE = "Rod of Madness"
 
@@ -26,8 +28,9 @@ F6 - No gravity or friction
 F7 - Layout, no gravity, lots of friction
 F8 - Gravity, little bit of friction
 F9 - Fullscreen on/off
+F12- Developer mode
 
-Right-click, fire coin
+Right-click, fire duck
 
 """
 
@@ -54,6 +57,7 @@ class ViewGame(arcade.View):
         # Lists of sprites or lines
         self.sprite_list_pymunk = None
         self.static_lines_pymunk = []
+        self.floor_height = 0
 
         # Used for dragging shapes around with the mouse
         self.shape_being_dragged = None
@@ -74,6 +78,9 @@ class ViewGame(arcade.View):
         self.physics = "Normal"
         self.mode = "Make Crate"
 
+        # Timer
+        self.timer = timer.Timer()
+
     def on_setup(self):
         self.mode_developer = True
         self.space = pymunk.Space()
@@ -81,11 +88,16 @@ class ViewGame(arcade.View):
         self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
         self.static_lines_pymunk = []
         self.window.background_color = arcade.color.AERO_BLUE
+        print(arcade.color.AERO_BLUE)
+
+        # Timer
+        self.timer.on_setup()
+        self.timer.start()
 
         # Create the floor
-        self.floor_height = 80
+        self.floor_height = 80.0
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        shape = pymunk.Segment(body, [0, self.floor_height], [self.window.width, self.floor_height], 0.0)
+        shape = pymunk.Segment(body, (0.0, self.floor_height), (self.window.width, self.floor_height), 0.0)
         shape.friction = 10
         self.space.add(shape, body)
         self.static_lines_pymunk.append(shape)
@@ -129,6 +141,7 @@ class ViewGame(arcade.View):
             arcade.draw_text(output, 20, self.window.height - 60, arcade.color.WHITE)
             output = f"Physics: {self.physics}"
             arcade.draw_text(output, 20, self.window.height - 80, arcade.color.WHITE)
+        self.timer.on_draw(self.window.width // 2, self.window.height // 2)
 
     def on_mouse_press(self, x, y, button, modifiers):
 
@@ -232,6 +245,8 @@ class ViewGame(arcade.View):
                 elif sprite.anim_speed_counter < 0:
                     sprite.anim_speed_counter = sprite.anim_speed
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
+        self.timer.on_update(delta_time)
+        sky.change_sky(self.timer.game_hour)
 
         # Save the time it took to do this.
         self.processing_time = timeit.default_timer() - start_time
