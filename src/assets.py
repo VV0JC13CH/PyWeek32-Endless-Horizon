@@ -18,7 +18,9 @@ crates_textures = [arcade.load_texture(path_to_string('gfx', 'crate16x16a.png'),
 
 sea_textures = [arcade.load_texture(path_to_string('gfx', 'sea96x64.png'), width=96, height=64)]
 
+#
 ground_texture = arcade.load_texture(path_to_string('gfx', 'ground288x64.png'), width=288, height=64)
+bridge_texture = arcade.load_texture(path_to_string('gfx', 'bridge416x64.png'), width=416, height=64)
 
 # Pallet: https://colorswall.com/palette/24326/
 # Each index means another game_cycle aka hours
