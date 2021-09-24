@@ -93,6 +93,7 @@ def make_bridge(sprite_list, window, space):
                            (bridge.center_x + bridge.width / 2, bridge.center_y + bridge.height / 6), 0.0)
     shape.friction = 10
     space.add(shape, body)
+    return bridge.center_x - bridge.width / 2, bridge.center_y + bridge.height
 
 
 def make_ground(sprite_list, window):
@@ -101,8 +102,6 @@ def make_ground(sprite_list, window):
         ground.center_x = window.width - ground.width * i
         ground.center_y = 0 + ground.height / 2
         sprite_list.append(ground)
-
-
 
 
 def make_crate(x, y, space, global_sprite_list, instance_sprite_list=None):

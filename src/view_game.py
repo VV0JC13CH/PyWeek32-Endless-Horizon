@@ -11,6 +11,7 @@ import os
 
 import elements
 import connection
+import fisher
 import sky
 
 SCREEN_TITLE = "Rod of Madness"
@@ -65,6 +66,7 @@ class ViewGame(arcade.View):
         self.sprite_list_sea = None
         self.static_lines_pymunk = []
         self.floor_height = 0
+        self.bridge_position = (0.0, 0.0)
 
         # Camera
         self.camera_sprites = arcade.Camera(self.window.width, self.window.height)
@@ -97,6 +99,9 @@ class ViewGame(arcade.View):
         # Timer
         self.timer = timer.Timer()
 
+        # Player
+        self.fisher = fisher.Fisher()
+
     def on_setup(self):
         self.mode_developer = True
         self.space = pymunk.Space()
@@ -106,8 +111,7 @@ class ViewGame(arcade.View):
         self.sprite_list_static = arcade.SpriteList()
         self.sprite_list_sea = arcade.SpriteList()
         elements.make_ground(self.sprite_list_static, self.window)
-        elements.make_bridge(self.sprite_list_static, self.window, self.space)
-
+        self.bridge_position = elements.make_bridge(self.sprite_list_static, self.window, self.space)
 
         self.static_lines_pymunk = []
 
@@ -131,6 +135,11 @@ class ViewGame(arcade.View):
         elements.setup_sea(self.window, self.space,
                            self.sprite_list_sea, self.static_lines_pymunk)
 
+        # Setup player:
+        self.fisher.on_setup(bridge_x=self.bridge_position[0],
+                             bridge_y=self.bridge_position[1],
+                             space=self.space)
+
     def on_draw(self):
         """
         Render the screen.
@@ -144,6 +153,9 @@ class ViewGame(arcade.View):
 
         # Select the (unscrolled) camera for our GUI
         self.camera_sprites.use()
+
+        # Draw player
+        self.fisher.on_draw()
 
         # Draw all the sprites
         self.sprite_list_pymunk.draw()
@@ -305,6 +317,8 @@ class ViewGame(arcade.View):
         if self.shape_being_dragged is not None:
             self.shape_being_dragged.shape.body.position = self.last_mouse_position
             self.shape_being_dragged.shape.body.velocity = 0, 0
+
+        self.fisher.on_update()
 
         # Move sprites to where physics objects are
         for sprite in self.sprite_list_pymunk:

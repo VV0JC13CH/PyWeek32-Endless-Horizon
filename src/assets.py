@@ -22,6 +22,19 @@ sea_textures = [arcade.load_texture(path_to_string('gfx', 'sea96x64.png'), width
 ground_texture = arcade.load_texture(path_to_string('gfx', 'ground288x64.png'), width=288, height=64)
 bridge_texture = arcade.load_texture(path_to_string('gfx', 'bridge416x64.png'), width=416, height=64)
 
+# Fisher from head to shoes:
+fisher_head_texture = arcade.load_texture(path_to_string('gfx', 'fisher_head32x32.png'), width=32, height=32)
+fisher_arm_texture = arcade.load_texture(path_to_string('gfx', 'fisher_arm32x32.png'), width=32, height=32)
+fisher_body_texture = arcade.load_texture(path_to_string('gfx', 'fisher_body66x58.png'), width=66, height=58)
+
+# Static fisher:
+fisher_static_textures = []
+for x in range(1,14,1):
+    texture = arcade.load_texture(path_to_string("gfx", "fisher_static"+str(x)+".png"))
+    fisher_static_textures.append(texture)
+fisher_static_sprite = arcade.Sprite(texture=fisher_static_textures[0])
+fisher_static_sprite.textures = fisher_static_textures
+
 # Pallet: https://colorswall.com/palette/24326/
 # Each index means another game_cycle aka hours
 backgrounds = [
