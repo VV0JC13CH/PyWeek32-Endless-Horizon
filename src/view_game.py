@@ -173,9 +173,9 @@ class ViewGame(arcade.View):
             self.mode = "Make Ballon"
 
         elif symbol == arcade.key.F4:
-            self.mode = "Make PinJoint"
+            self.mode = "Make Connection by PinJoint"
         elif symbol == arcade.key.F5:
-            self.mode = "Make DampedSpring"
+            self.mode = "Make Connection by DampedSpring"
 
         elif symbol == arcade.key.F6:
             self.space.gravity = (0.0, 0.0)
