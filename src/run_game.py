@@ -49,7 +49,6 @@ class GlobalWindow(arcade.Window):
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
 
-
         # views:
         self.view_game = None
         self.view_menu = None

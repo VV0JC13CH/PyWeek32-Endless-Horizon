@@ -33,6 +33,12 @@ F12- Developer mode
 Right-click, fire duck
 
 """
+# How many pixels to keep as a minimum margin between the character
+# and the edge of the screen.
+VIEWPORT_MARGIN = 200
+
+# How fast the camera pans to the player. 1.0 is instant.
+CAMERA_SPEED = 0.1
 
 
 class ViewGame(arcade.View):
@@ -56,6 +62,15 @@ class ViewGame(arcade.View):
         self.sprite_list_pymunk = None
         self.static_lines_pymunk = []
         self.floor_height = 0
+
+        # Camera
+        self.camera_sprites = arcade.Camera(self.window.width, self.window.height)
+        self.camera_gui = arcade.Camera(self.window.width, self.window.height)
+
+        # Set the viewport boundaries
+        # These numbers set where we have 'scrolled' to.
+        self.view_left = 0
+        self.view_bottom = 0
 
         # Used for dragging shapes around with the mouse
         self.shape_being_dragged = None
@@ -89,14 +104,26 @@ class ViewGame(arcade.View):
         # Timer
         self.timer.on_setup()
         self.timer.start()
+        # Camera
+        self.camera_sprites = arcade.Camera(self.window.width, self.window.height)
+        self.camera_gui = arcade.Camera(self.window.width, self.window.height)
+
+        # Set the viewport boundaries
+        # These numbers set where we have 'scrolled' to.
+        self.view_left = 0
+        self.view_bottom = 0
 
         # Create the floor
-        self.floor_height = 80.0
+        self.floor_height = 120.0
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
         shape = pymunk.Segment(body, (0.0, self.floor_height), (self.window.width, self.floor_height), 0.0)
         shape.friction = 10
         self.space.add(shape, body)
         self.static_lines_pymunk.append(shape)
+
+        # Test camera:
+        # Update camera:
+        elements.make_duck(self.window.width-50, self.window.height / 2, self.space, self.sprite_list_pymunk)
 
     def on_draw(self):
         """
@@ -109,6 +136,9 @@ class ViewGame(arcade.View):
         # Start timing how long this takes
         draw_start_time = timeit.default_timer()
 
+        # Select the (unscrolled) camera for our GUI
+        self.camera_sprites.use()
+
         # Draw all the sprites
         self.sprite_list_pymunk.draw()
 
@@ -118,7 +148,7 @@ class ViewGame(arcade.View):
 
             pv1 = body.position + line.a.rotated(body.angle)
             pv2 = body.position + line.b.rotated(body.angle)
-            arcade.draw_line(pv1.x, pv1.y, pv2.x, pv2.y, arcade.color.WHITE, 2)
+            arcade.draw_line(pv1.x, pv1.y, pv2.x, pv2.y, arcade.color.BLUE, 2)
 
         for joint in self.joints:
             color = arcade.color.WHITE
@@ -126,8 +156,12 @@ class ViewGame(arcade.View):
                 color = arcade.color.DARK_GREEN
             arcade.draw_line(joint.a.position.x, joint.a.position.y, joint.b.position.x, joint.b.position.y, color, 3)
 
+        # Select the (unscrolled) camera for our GUI
+        self.camera_gui.use()
+
         # Display timings
         if self.mode_developer:
+            # Camera
             output = f"Processing time: {self.processing_time:.3f}"
             arcade.draw_text(output, 20, self.window.height - 20, arcade.color.WHITE)
             output = f"Drawing time: {self.draw_time:.3f}"
@@ -137,30 +171,56 @@ class ViewGame(arcade.View):
             arcade.draw_text(output, 20, self.window.height - 60, arcade.color.WHITE)
             output = f"Physics: {self.physics}"
             arcade.draw_text(output, 20, self.window.height - 80, arcade.color.WHITE)
+            # Draw the GUI
+            arcade.draw_rectangle_filled(self.window.width // 2, 20, self.window.width, 40, arcade.color.ALMOND)
+            text = f"Camera position: ({self.camera_sprites.position[0]:5.1f}, {self.camera_sprites.position[1]:5.1f})"
+            arcade.draw_text(text, 10, 10, arcade.color.BLACK_BEAN, 20)
+
+            # Draw the box that we work to make sure the user stays inside of.
+            # This is just for illustration purposes. You'd want to remove this
+            # in your game.
+            left_boundary = VIEWPORT_MARGIN
+            right_boundary = self.window.width - VIEWPORT_MARGIN
+            top_boundary = self.window.height - VIEWPORT_MARGIN
+            bottom_boundary = VIEWPORT_MARGIN
+            arcade.draw_lrtb_rectangle_outline(left_boundary, right_boundary, top_boundary, bottom_boundary,
+                                               arcade.color.RED, 2)
+
         self.timer.on_draw(self.window.width // 2, self.window.height // 2)
 
     def on_mouse_press(self, x, y, button, modifiers):
 
         if button == 1 and self.mode == "Drag":
-            self.last_mouse_position = x, y
-            self.shape_being_dragged = connection.get_shape(x, y, self.space)
+            self.last_mouse_position = x + self.camera_sprites.position[0], y + self.camera_sprites.position[1],
+            self.shape_being_dragged = connection.get_shape(
+                x + self.camera_sprites.position[0], y + self.camera_sprites.position[1], self.space)
 
         elif button == 1 and self.mode == "Make Crate":
-            elements.make_crate(x, y, self.space, self.sprite_list_pymunk)
+            elements.make_crate(x + self.camera_sprites.position[0],
+                                y + self.camera_sprites.position[1],
+                                self.space, self.sprite_list_pymunk)
 
         elif button == 1 and self.mode == "Make Ballon":
-            elements.make_ballon(x, y, self.space, self.sprite_list_pymunk)
+            elements.make_ballon(x + self.camera_sprites.position[0],
+                                 y + self.camera_sprites.position[1],
+                                 self.space, self.sprite_list_pymunk)
 
         elif button == 1 and self.mode == "Make Connection by PinJoint":
-            self.shape_1, self.shape_2 = connection.make_pin_joint_connection(x, y, self.space, self.joints,
+            self.shape_1, self.shape_2 = connection.make_pin_joint_connection(x + self.camera_sprites.position[0],
+                                                                              y + self.camera_sprites.position[1],
+                                                                              self.space, self.joints,
                                                                               self.shape_1, self.shape_2)
 
         elif button == 1 and self.mode == "Make Connection by DampedSpring":
-            self.shape_1, self.shape_2 = connection.make_damped_spring_connection(x, y, self.space, self.joints,
+            self.shape_1, self.shape_2 = connection.make_damped_spring_connection(x + self.camera_sprites.position[0],
+                                                                                  y + self.camera_sprites.position[1],
+                                                                                  self.space, self.joints,
                                                                                   self.shape_1, self.shape_2)
 
         elif button == 4 and self.mode_developer:
-            elements.make_duck(x, y, self.space, self.sprite_list_pymunk)
+            elements.make_duck(x + self.camera_sprites.position[0],
+                               y + self.camera_sprites.position[1],
+                               self.space, self.sprite_list_pymunk)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == 1:
@@ -170,7 +230,7 @@ class ViewGame(arcade.View):
     def on_mouse_motion(self, x, y, dx, dy):
         if self.shape_being_dragged is not None:
             # If we are holding an object, move it with the mouse
-            self.last_mouse_position = x, y
+            self.last_mouse_position = x + self.camera_sprites.position[0], y + self.camera_sprites.position[1]
             self.shape_being_dragged.shape.body.position = self.last_mouse_position
             self.shape_being_dragged.shape.body.velocity = dx * 20, dy * 20
 
@@ -211,7 +271,7 @@ class ViewGame(arcade.View):
 
         # Check for sprites that are behind the screen
         for sprite in self.sprite_list_pymunk:
-            if sprite.pymunk_shape.body.position.x > self.window.width:
+            if sprite.pymunk_shape.body.position.x > self.window.width * 3:
                 # Remove balls from physics space
                 self.space.remove(sprite.pymunk_shape, sprite.pymunk_shape.body)
                 # Remove balls from physics list
@@ -243,6 +303,46 @@ class ViewGame(arcade.View):
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
         self.timer.on_update(delta_time)
         sky.change_sky(self.timer.game_hour)
+        self.scroll_to_player(self.sprite_list_pymunk[0])
 
         # Save the time it took to do this.
         self.processing_time = timeit.default_timer() - start_time
+
+    def scroll_to_player(self, target_sprite):
+        """
+        if CAMERA_SPEED is 1, the camera will immediately move to the desired position.
+        """
+
+        # --- Manage Scrolling ---
+
+        # Scroll left
+        left_boundary = self.view_left + VIEWPORT_MARGIN
+        if target_sprite.left < left_boundary:
+            self.view_left -= left_boundary - target_sprite.left
+
+        # Scroll right
+        right_boundary = self.view_left + self.window.width - VIEWPORT_MARGIN
+        if target_sprite.right > right_boundary:
+            self.view_left += target_sprite.right - right_boundary
+
+        # Scroll up
+        top_boundary = self.view_bottom + self.window.height - VIEWPORT_MARGIN
+        if target_sprite.top > top_boundary:
+            self.view_bottom += target_sprite.top - top_boundary
+
+        # Scroll down
+        bottom_boundary = self.view_bottom + VIEWPORT_MARGIN
+        if target_sprite.bottom < bottom_boundary:
+            self.view_bottom -= bottom_boundary - target_sprite.bottom
+
+        # Scroll to the proper location
+        position = self.view_left, self.view_bottom
+        self.camera_sprites.move_to(position, CAMERA_SPEED)
+
+    def on_resize(self, width, height):
+        """
+        Resize window
+        Handle the user grabbing the edge and resizing the window.
+        """
+        self.camera_sprites.resize(int(width), int(height))
+        self.camera_gui.resize(int(width), int(height))
