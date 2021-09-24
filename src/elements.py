@@ -81,11 +81,18 @@ def kill_old_instances(sprite, space):
     sprite.kill()
 
 
-def make_bridge(sprite_list, window):
+def make_bridge(sprite_list, window, space):
+    # Sprite
     bridge = arcade.Sprite(texture=assets.bridge_texture)
     bridge.center_x = window.width - bridge.width * 2
     bridge.center_y = bridge.height * 1.5
     sprite_list.append(bridge)
+    # Physic_line
+    body = pymunk.Body(body_type=pymunk.Body.STATIC)
+    shape = pymunk.Segment(body, (bridge.center_x - bridge.width / 2, bridge.center_y + bridge.height / 6),
+                           (bridge.center_x + bridge.width / 2, bridge.center_y + bridge.height / 6), 0.0)
+    shape.friction = 10
+    space.add(shape, body)
 
 
 def make_ground(sprite_list, window):

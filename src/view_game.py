@@ -106,7 +106,7 @@ class ViewGame(arcade.View):
         self.sprite_list_static = arcade.SpriteList()
         self.sprite_list_sea = arcade.SpriteList()
         elements.make_ground(self.sprite_list_static, self.window)
-        elements.make_bridge(self.sprite_list_static, self.window)
+        elements.make_bridge(self.sprite_list_static, self.window, self.space)
 
 
         self.static_lines_pymunk = []
