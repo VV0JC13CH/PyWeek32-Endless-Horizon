@@ -21,6 +21,8 @@ class Fisher(arcade.SpriteList):
         self.anim_speed_counter = 0
 
     def on_setup(self, bridge_x, bridge_y, space, anim_speed=4):
+        for sprite in self:
+            sprite.kill()
         self.position = bridge_x, bridge_y
         self.space = space
         self.sprite_head = arcade.Sprite(texture=assets.fisher_head_texture)
@@ -36,6 +38,7 @@ class Fisher(arcade.SpriteList):
         self.sprite_static.position = self.position[0], self.position[1] + self.sprite_static.height / 4
         self.anim_speed = anim_speed
         self.anim_speed_counter = anim_speed
+        self.sprite_static.cur_texture_index = 0
         self.append(self.sprite_static)
         self.game_started = False
         self.static_animations_finished = False
@@ -67,7 +70,7 @@ class Fisher(arcade.SpriteList):
                 elif self.anim_speed_counter < 0:
                     self.anim_speed_counter = self.anim_speed
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
-        elif not self.game_started:
+        elif not self.game_started and not self.static_animations_finished:
             # Move static sprites from texture 1-2 before launch of game
             for sprite in self:
                 self.anim_speed_counter -= 1

@@ -106,6 +106,7 @@ class ViewGame(arcade.View):
 
     def on_setup(self):
         self.mode_developer = True
+        self.game_started = False
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
         self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
@@ -326,6 +327,8 @@ class ViewGame(arcade.View):
             self.shape_being_dragged.shape.body.velocity = 0, 0
 
         self.fisher.on_update()
+        if self.game_started:
+            self.scroll_to_player(self.sprite_list_pymunk[0])
 
         # Move sprites to where physics objects are
         for sprite in self.sprite_list_pymunk:
@@ -343,7 +346,6 @@ class ViewGame(arcade.View):
                     sprite.anim_speed_counter = sprite.anim_speed
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
         sky.change_sky(self.timer.game_hour)
-        self.scroll_to_player(self.sprite_list_pymunk[0])
 
         # Save the time it took to do this.
         self.timer.on_update(delta_time)
