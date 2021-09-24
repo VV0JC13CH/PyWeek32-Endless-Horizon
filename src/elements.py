@@ -80,6 +80,15 @@ def kill_old_instances(sprite, space):
     # Remove sprites from physics list
     sprite.kill()
 
+
+def make_ground(sprite_list, window):
+    for i in range(0,3):
+        ground = arcade.Sprite(texture=assets.ground_texture)
+        ground.center_x = window.width - ground.width * i
+        ground.center_y = 0 + ground.height
+        sprite_list.append(ground)
+
+
 def make_crate(x, y, space, global_sprite_list, instance_sprite_list=None):
     if instance_sprite_list is None:
         instance_sprite_list = []

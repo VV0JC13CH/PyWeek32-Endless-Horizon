@@ -60,6 +60,7 @@ class ViewGame(arcade.View):
 
         # Lists of sprites or lines
         self.sprite_list_pymunk = None
+        self.sprite_list_pymunk_static = None
         self.sprite_list_static = None
         self.sprite_list_sea = None
         self.static_lines_pymunk = []
@@ -101,8 +102,10 @@ class ViewGame(arcade.View):
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
         self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
+        self.sprite_list_pymunk_static = arcade.SpriteList()
         self.sprite_list_static = arcade.SpriteList()
         self.sprite_list_sea = arcade.SpriteList()
+        elements.make_ground(self.sprite_list_static, self.window)
 
         self.static_lines_pymunk = []
 
@@ -120,7 +123,7 @@ class ViewGame(arcade.View):
 
         # Test camera:
         # Update camera:
-        elements.make_duck(self.window.width - 50, self.window.height / 2, self.space, self.sprite_list_pymunk)
+        elements.make_duck(self.window.width - 300, self.window.height / 2, self.space, self.sprite_list_pymunk)
 
         # Setup sea:
         elements.setup_sea(self.window, self.space,
@@ -142,7 +145,7 @@ class ViewGame(arcade.View):
 
         # Draw all the sprites
         self.sprite_list_pymunk.draw()
-        self.sprite_list_static.draw()
+        self.sprite_list_pymunk_static.draw()
         self.sprite_list_sea.draw()
 
         # Draw the lines that aren't sprites
@@ -152,6 +155,9 @@ class ViewGame(arcade.View):
             pv1 = body.position + line.a.rotated(body.angle)
             pv2 = body.position + line.b.rotated(body.angle)
             arcade.draw_line(pv1.x, pv1.y, pv2.x, pv2.y, arcade.color.LIGHT_SKY_BLUE, 2)
+
+        # Draw f.e. ground:
+        self.sprite_list_static.draw()
 
         if self.mode_developer:
             for joint in self.joints:
@@ -280,7 +286,7 @@ class ViewGame(arcade.View):
             if sprite.pymunk_shape.body.position.x > self.camera_sprites.position[0] + self.window.width:
                 elements.kill_old_instances(sprite, self.space)
         # Same for lines
-        for sprite in self.sprite_list_static:
+        for sprite in self.sprite_list_pymunk_static:
             if sprite.pymunk_shape.body.position.x > self.camera_sprites.position[0] + self.window.width:
                 elements.kill_old_instances(sprite, self.space)
 
@@ -288,7 +294,6 @@ class ViewGame(arcade.View):
         for sprite in self.sprite_list_sea:
             if sprite.center_x >= self.camera_sprites.position[0] + self.window.width * 2 + sprite.width:
                 elements.update_sea(sprite, self.window, self.space, self.static_lines_pymunk)
-
 
         # Update physics
         self.space.step(1 / 80.0)
