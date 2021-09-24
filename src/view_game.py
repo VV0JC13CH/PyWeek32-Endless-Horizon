@@ -52,8 +52,8 @@ class ViewGame(arcade.View):
         self.space.gravity = (0.0, -900.0)
 
         # Lists of sprites or lines
-        self.sprite_list: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
-        self.static_lines = []
+        self.sprite_list_pymunk: arcade.SpriteList[elements.PhysicsSprite] = arcade.SpriteList()
+        self.static_lines_pymunk = []
 
         # Used for dragging shapes around with the mouse
         self.shape_being_dragged = None
@@ -70,6 +70,7 @@ class ViewGame(arcade.View):
 
         self.joints = []
 
+        self.mode_developer = False
         self.physics = "Normal"
         self.mode = "Make Crate"
 
@@ -79,7 +80,7 @@ class ViewGame(arcade.View):
         shape = pymunk.Segment(body, [0, self.floor_height], [self.window.width, self.floor_height], 0.0)
         shape.friction = 10
         self.space.add(shape, body)
-        self.static_lines.append(shape)
+        self.static_lines_pymunk.append(shape)
 
     def on_setup(self):
         pass
@@ -96,10 +97,10 @@ class ViewGame(arcade.View):
         draw_start_time = timeit.default_timer()
 
         # Draw all the sprites
-        self.sprite_list.draw()
+        self.sprite_list_pymunk.draw()
 
         # Draw the lines that aren't sprites
-        for line in self.static_lines:
+        for line in self.static_lines_pymunk:
             body = line.body
 
             pv1 = body.position + line.a.rotated(body.angle)
@@ -135,10 +136,10 @@ class ViewGame(arcade.View):
             self.shape_being_dragged = connection.get_shape(x, y, self.space)
 
         elif button == 1 and self.mode == "Make Crate":
-            elements.make_crate(x, y, self.space, self.sprite_list)
+            elements.make_crate(x, y, self.space, self.sprite_list_pymunk)
 
         elif button == 1 and self.mode == "Make Ballon":
-            elements.make_ballon(x, y, self.space, self.sprite_list)
+            elements.make_ballon(x, y, self.space, self.sprite_list_pymunk)
 
         elif button == 1 and self.mode == "Make Connection by PinJoint":
             self.shape_1, self.shape_2 = connection.make_pin_joint_connection(x, y, self.space, self.joints,
@@ -149,7 +150,7 @@ class ViewGame(arcade.View):
                                                                                   self.shape_1, self.shape_2)
 
         elif button == 4:
-            elements.make_duck(x, y, self.space, self.sprite_list)
+            elements.make_duck(x, y, self.space, self.sprite_list_pymunk)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == 1:
@@ -188,12 +189,15 @@ class ViewGame(arcade.View):
             self.space.damping = 0.95
             self.space.gravity = (0.0, -900.0)
             self.physics = "Normal gravity"
+        elif symbol == arcade.key.F12:
+            self.mode_developer = not self.mode_developer
+            print("Developer mode:", self.mode_developer)
 
     def on_update(self, delta_time):
         start_time = timeit.default_timer()
 
         # Check for sprites that are behind the screen
-        for sprite in self.sprite_list:
+        for sprite in self.sprite_list_pymunk:
             if sprite.pymunk_shape.body.position.x > self.window.width:
                 # Remove balls from physics space
                 self.space.remove(sprite.pymunk_shape, sprite.pymunk_shape.body)
@@ -210,10 +214,21 @@ class ViewGame(arcade.View):
             self.shape_being_dragged.shape.body.velocity = 0, 0
 
         # Move sprites to where physics objects are
-        for sprite in self.sprite_list:
+        for sprite in self.sprite_list_pymunk:
             sprite.center_x = sprite.pymunk_shape.body.position.x
             sprite.center_y = sprite.pymunk_shape.body.position.y
             sprite.angle = math.degrees(sprite.pymunk_shape.body.angle)
+            if len(sprite.textures) > 1:
+                sprite.anim_speed_counter -= 1
+                if sprite.anim_speed_counter == 0:
+                    if sprite.cur_texture_index == len(sprite.textures)-1:
+                        sprite.cur_texture_index = 0
+                    else:
+                        sprite.cur_texture_index += 1
+                elif sprite.anim_speed_counter < 0:
+                    sprite.anim_speed_counter = sprite.anim_speed
+                sprite.texture = sprite.textures[sprite.cur_texture_index]
+
 
         # Save the time it took to do this.
         self.processing_time = timeit.default_timer() - start_time
