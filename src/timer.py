@@ -1,5 +1,4 @@
 import arcade
-import datetime
 
 
 class Timer:
