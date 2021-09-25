@@ -17,7 +17,7 @@ SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Endless Horizon"
 SOUND = 1.0
-MUSIC = 0.6
+MUSIC = 0.4
 
 
 """

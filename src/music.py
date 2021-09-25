@@ -3,7 +3,8 @@ import assets
 
 
 class MusicPlayer:
-    def __init__(self, volume=0.0):
+    def __init__(self, volume=0.2):
+        self.volume = volume
         self.media_player = None
         self.paused = True
         self.songs = [assets.house_music_path]

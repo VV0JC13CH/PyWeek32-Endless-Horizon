@@ -82,5 +82,24 @@ backgrounds = [
     (0, 19, 25)
 ]
 
+# Progress bar related textures:
+progress_bar_texture = arcade.load_texture(path_to_string("gfx", "progress_bar300x60.png"))
+progress_bar_fill_texture = arcade.load_texture(path_to_string("gfx", "progress_bar_fill270x30.png"))
+
+mini_island_sprite = arcade.Sprite()
+mini_island_texture_1 = arcade.load_texture(path_to_string("gfx", "island1.png"))
+mini_island_texture_2 = arcade.load_texture(path_to_string("gfx", "island2.png"))
+mini_island_texture_3 = arcade.load_texture(path_to_string("gfx", "island3.png"))
+mini_island_texture_4 = arcade.load_texture(path_to_string("gfx", "island4.png"))
+mini_island_texture_5 = arcade.load_texture(path_to_string("gfx", "island5.png"))
+mini_island_texture_6 = arcade.load_texture(path_to_string("gfx", "island6.png"))
+
+mini_island_sprite.textures = [mini_island_texture_1,
+                               mini_island_texture_2,
+                               mini_island_texture_3,
+                               mini_island_texture_4,
+                               mini_island_texture_5,
+                               mini_island_texture_6]
+
 # music
 house_music_path = path_to_string("sfx", "house_loop.wav")

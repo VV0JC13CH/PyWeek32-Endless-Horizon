@@ -62,9 +62,13 @@ class ViewGame(arcade.View):
         self.sprite_list_static = None
         self.sprite_list_sea = None
         self.sprite_list_clouds = None
+        self.sprite_list_progress_bar = None
         self.static_lines_pymunk = []
         self.floor_height = 0
         self.bridge_position = (0.0, 0.0)
+
+        #
+        self.progress = 0
 
         # Camera
         self.viewport_margin = 0
@@ -114,6 +118,7 @@ class ViewGame(arcade.View):
         self.sprite_list_static = arcade.SpriteList()
         self.sprite_list_sea = arcade.SpriteList()
         elements.make_ground(self.sprite_list_static, self.window)
+        self.sprite_list_progress_bar = arcade.SpriteList()
         self.bridge_position = elements.make_bridge(self.sprite_list_static, self.window, self.space)
 
         self.static_lines_pymunk = []
@@ -133,9 +138,14 @@ class ViewGame(arcade.View):
         self.view_left = 0
         self.view_bottom = 0
 
+        self.progress = 0
+
         # Clouds
         self.sprite_list_clouds = arcade.SpriteList()
         sky.setup_clouds(self.sprite_list_clouds)
+
+        # Setup progress bar
+        elements.setup_progress_bar(self.sprite_list_progress_bar)
 
         # Setup sea:
         elements.setup_sea(self.window, self.space,
@@ -194,6 +204,8 @@ class ViewGame(arcade.View):
         # GUI BELOW:
         # Select the (unscrolled) camera for our GUI
         self.camera_gui.use()
+        self.sprite_list_progress_bar.draw()
+        elements.draw_progress_bar(self.fisher, self.window, self.progress)
 
         # Display timings
         if self.mode_developer:
@@ -356,9 +368,12 @@ class ViewGame(arcade.View):
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
         sky.change_sky(self.timer.game_hour)
         sky.change_clouds(self.sprite_list_clouds, self.timer.game_hour, self.window, self.camera_sprites)
+        elements.update_progress_bar(self.progress)
 
         # Save the time it took to do this.
         self.timer.on_update(delta_time)
+
+        self.progress = (5333333 + self.camera_sprites.position[0]) / 5333333
 
         self.processing_time = timeit.default_timer() - start_time
 

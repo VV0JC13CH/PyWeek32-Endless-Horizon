@@ -56,7 +56,7 @@ def setup_sea(window, space, global_sprite_sea_list, global_static_lines_list):
         global_sprite_sea_list.append(sprite)
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
     # 5333333 - level width (1h of playing)
-    shape = pymunk.Segment(body, (-6000000, sprite.height), (window.width * 4, sprite.height), 0.0)
+    shape = pymunk.Segment(body, (-5333333, sprite.height), (window.width * 4, sprite.height), 0.0)
     shape.friction = 10
     space.add(shape, body)
     global_static_lines_list.append(shape)
@@ -120,6 +120,37 @@ def make_crate(x, y, space, global_sprite_list, instance_sprite_list=None):
     sprite = CrateSprite(shape, texture=assets.crates_textures[3], width=size, height=size)
     global_sprite_list.append(sprite)
     instance_sprite_list.append(sprite)
+
+
+def setup_progress_bar(sprite_list_progress_bar):
+    sprite_list_progress_bar.append(sprite=assets.mini_island_sprite)
+
+
+def draw_progress_bar(fisher, window, progress):
+    if fisher.connected_to_duck:
+        arcade.draw_texture_rectangle(center_x=window.width / 2 - (540 - progress * 540),
+                                      center_y=window.height - 60,
+                                      width=540 * progress,
+                                      height=30,
+                                      texture=assets.progress_bar_fill_texture)
+        arcade.draw_texture_rectangle(center_x=window.width / 2,
+                                      center_y=window.height - 60,
+                                      width=600,
+                                      height=60,
+                                      texture=assets.progress_bar_texture)
+        sprite = assets.mini_island_sprite
+        sprite.center_x = window.width / 2 - 350
+        sprite.center_y = window.height - 60
+
+
+def update_progress_bar(progress):
+    sprite = assets.mini_island_sprite
+    max_index = 6
+    if sprite.cur_texture_index < max_index - 1:
+        sprite.cur_texture_index += 0.1
+    else:
+        sprite.cur_texture_index = 0
+    sprite.texture = sprite.textures[int(sprite.cur_texture_index)]
 
 
 class PhysicsSprite(arcade.Sprite):

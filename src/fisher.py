@@ -1,8 +1,6 @@
 import arcade
 import pymunk
-import math
 import assets
-import connection
 
 
 class Fisher(arcade.SpriteList):
