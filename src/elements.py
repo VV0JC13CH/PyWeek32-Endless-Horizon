@@ -20,7 +20,7 @@ def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None, window
     # Speed of duck
     if window is not None:
         if window.fullscreen:
-            body.velocity = -2000, 0
+            body.velocity = -1800, 0
         if not window.fullscreen:
             body.velocity = -1700, 0
     else:

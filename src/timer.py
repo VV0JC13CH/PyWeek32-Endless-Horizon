@@ -1,14 +1,18 @@
 import arcade
+import datetime
 
 
 class Timer:
     def __init__(self):
         self.total_time = 0.0
         self.game_cycle = 0.0
+        self.game_event_time = 0
         self.output = "00:00:00"
         self.game_hour = 0
         self.game_hour_counter_started = False
         self.night_is_coming = True
+        self.minutes_total = 0
+        self.seconds_total = 0
 
     def on_setup(self):
         self.total_time = 0.0
@@ -16,10 +20,12 @@ class Timer:
         self.game_hour = 0
         self.night_is_coming = True
         self.game_hour_counter_started = False
+        self.seconds_total = 0
+        self.game_event_time = 0
 
     def on_draw(self, pos_x, pos_y):
         arcade.draw_text(self.output,
-                         pos_x, pos_y+10,
+                         pos_x, pos_y + 10,
                          arcade.color.BROWN_NOSE, 20,
                          anchor_x="center")
 
@@ -40,12 +46,9 @@ class Timer:
         # Calculate seconds by using a modulus (remainder)
         seconds = int(self.total_time) % 60
 
-        # Calculate 100s of a second
-        seconds_100s = int((self.total_time - seconds) * 100)
-
         # "Game-hours"
         # New background every 20s? So progress will be visible for a player
-        if int(self.game_cycle) // 20 >= 1 and self.game_hour_counter_started:
+        if int(self.game_cycle) // 10 >= 1 and self.game_hour_counter_started:
             print("game cycle", self.game_hour)
             if self.night_is_coming and self.game_hour <= 23:
                 self.game_hour += 1

@@ -13,6 +13,7 @@ import elements
 import connection
 import fisher
 import sky
+import events
 
 SCREEN_TITLE = "Endless Horizon"
 
@@ -67,6 +68,9 @@ class ViewGame(arcade.View):
         self.floor_height = 0
         self.bridge_position = (0.0, 0.0)
 
+        # Event manager
+        self.event_manager = None
+
         self.victory = False
         self.game_over = False
 
@@ -105,7 +109,7 @@ class ViewGame(arcade.View):
 
         self.mode_developer = False
         self.physics = "Normal"
-        self.mode = "Make Crate"
+        self.mode = "Play"
 
         # Timer
         self.timer = timer.Timer()
@@ -164,6 +168,10 @@ class ViewGame(arcade.View):
                              bridge_y=self.bridge_position[1],
                              space=self.space)
         self.private_duck_list = arcade.SpriteList()
+
+        # Event manager
+        self.event_manager = events.EventManager(self.window,self.timer,self.space,self.sprite_list_pymunk,self.fisher)
+        self.event_manager.setup()
 
     def on_draw(self):
         """
@@ -241,10 +249,14 @@ class ViewGame(arcade.View):
             bottom_boundary = self.viewport_margin
             arcade.draw_lrtb_rectangle_outline(left_boundary, right_boundary, top_boundary, bottom_boundary,
                                                arcade.color.GREEN, 2)
+        self.event_manager.on_draw()
 
         self.timer.on_draw(self.window.width // 2, self.window.height - 80)
 
     def on_mouse_press(self, x, y, button, modifiers):
+        if button == 1 and self.mode == "Play":
+            if not self.game_started:
+                self.start_game()
 
         if button == 1 and self.mode == "Drag":
             self.last_mouse_position = x + self.camera_sprites.position[0], y + self.camera_sprites.position[1],
@@ -290,6 +302,7 @@ class ViewGame(arcade.View):
             self.last_mouse_position = x + self.camera_sprites.position[0], y + self.camera_sprites.position[1]
             self.shape_being_dragged.shape.body.position = self.last_mouse_position
             self.shape_being_dragged.shape.body.velocity = dx * 20, dy * 20
+        self.event_manager.update_mouse_coords(x + self.camera_sprites.position[0], y + self.camera_sprites.position[1])
 
     def on_key_press(self, symbol: int, modifiers: int):
         if self.mode_developer:
@@ -324,14 +337,7 @@ class ViewGame(arcade.View):
             print("Developer mode:", self.mode_developer)
         elif symbol == arcade.key.SPACE:
             if not self.game_started:
-                self.game_started = True
-                self.timer.start()
-                elements.make_duck(self.window.width-self.viewport_margin, self.window.height * 0.75, self.space,
-                                   self.sprite_list_pymunk, self.private_duck_list, self.window)
-                self.fisher.start(duck=self.private_duck_list, space=self.space, joints=self.joints)
-                # Setup progress bar
-                elements.setup_progress_bar(self.sprite_list_progress_bar)
-                print("Game started!")
+                self.start_game()
         elif symbol == arcade.key.UP:
             pass
         elif symbol == arcade.key.DOWN:
@@ -350,6 +356,16 @@ class ViewGame(arcade.View):
             pass
         elif symbol == arcade.key.RIGHT:
             pass
+
+    def start_game(self):
+        self.game_started = True
+        self.timer.start()
+        elements.make_duck(self.window.width - self.viewport_margin, self.window.height * 0.75, self.space,
+                           self.sprite_list_pymunk, self.private_duck_list, self.window)
+        self.fisher.start(duck=self.private_duck_list, space=self.space, joints=self.joints)
+        # Setup progress bar
+        elements.setup_progress_bar(self.sprite_list_progress_bar)
+        print("Game started!")
 
     def on_update(self, delta_time):
         start_time = timeit.default_timer()
@@ -408,6 +424,8 @@ class ViewGame(arcade.View):
             self.victory = True
         if self.victory and self.progress < 0.0:
             self.window.show_view(self.window.view_victory)
+
+        self.event_manager.on_update()
 
         self.processing_time = timeit.default_timer() - start_time
 
