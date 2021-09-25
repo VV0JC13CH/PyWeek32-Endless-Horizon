@@ -58,4 +58,4 @@ class Timer:
             self.game_cycle = 0
 
         # Output to draw:
-        self.output = f"{minutes:02d}:{seconds:02d}:{seconds_100s:02d}"
+        self.output = f"{minutes:02d}:{seconds:02d}"

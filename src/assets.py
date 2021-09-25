@@ -27,6 +27,13 @@ fisher_head_texture = arcade.load_texture(path_to_string('gfx', 'fisher_head32x3
 fisher_arm_texture = arcade.load_texture(path_to_string('gfx', 'fisher_arm32x32.png'), width=32, height=32)
 fisher_body_texture = arcade.load_texture(path_to_string('gfx', 'fisher_body66x58.png'), width=66, height=58)
 
+fisher_dynamic_textures = [
+    arcade.load_texture(path_to_string('gfx', 'fisher_player1.png'), width=68, height=78),
+    arcade.load_texture(path_to_string('gfx', 'fisher_player2.png'), width=68, height=78)
+]
+fisher_dynamic_sprite = arcade.Sprite(texture=fisher_dynamic_textures[0])
+fisher_dynamic_sprite.textures = fisher_dynamic_textures
+
 # Static fisher:
 fisher_static_textures = []
 for x in range(1,19,1):

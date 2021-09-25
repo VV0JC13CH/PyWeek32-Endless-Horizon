@@ -34,12 +34,9 @@ F12- Developer mode
 Right-click, fire duck
 
 """
-# How many pixels to keep as a minimum margin between the character
-# and the edge of the screen.
-VIEWPORT_MARGIN = 200
 
 # How fast the camera pans to the player. 1.0 is instant.
-CAMERA_SPEED = 0.1
+CAMERA_SPEED = 0.2
 
 
 class ViewGame(arcade.View):
@@ -69,6 +66,7 @@ class ViewGame(arcade.View):
         self.bridge_position = (0.0, 0.0)
 
         # Camera
+        self.viewport_margin = 0
         self.camera_sprites = arcade.Camera(self.window.width, self.window.height)
         self.camera_gui = arcade.Camera(self.window.width, self.window.height)
 
@@ -103,6 +101,7 @@ class ViewGame(arcade.View):
 
         # Player
         self.fisher = fisher.Fisher()
+        self.private_duck_list = None
 
     def on_setup(self):
         self.mode_developer = True
@@ -123,6 +122,10 @@ class ViewGame(arcade.View):
         # Camera
         self.camera_sprites = arcade.Camera(self.window.width, self.window.height)
         self.camera_gui = arcade.Camera(self.window.width, self.window.height)
+        if self.window.fullscreen:
+            self.viewport_margin = 200
+        else:
+            self.viewport_margin = 100
 
         # Set the viewport boundaries
         # These numbers set where we have 'scrolled' to.
@@ -130,8 +133,7 @@ class ViewGame(arcade.View):
         self.view_bottom = 0
 
         # Test camera:
-        # Update camera:
-        elements.make_duck(self.window.width - 300, self.window.height / 2, self.space, self.sprite_list_pymunk)
+
 
         # Setup sea:
         elements.setup_sea(self.window, self.space,
@@ -141,6 +143,7 @@ class ViewGame(arcade.View):
         self.fisher.on_setup(bridge_x=self.bridge_position[0],
                              bridge_y=self.bridge_position[1],
                              space=self.space)
+        self.private_duck_list = arcade.SpriteList()
 
     def on_draw(self):
         """
@@ -207,10 +210,10 @@ class ViewGame(arcade.View):
             # Draw the box that we work to make sure the user stays inside of.
             # This is just for illustration purposes. You'd want to remove this
             # in your game.
-            left_boundary = VIEWPORT_MARGIN
-            right_boundary = self.window.width - VIEWPORT_MARGIN
-            top_boundary = self.window.height - VIEWPORT_MARGIN
-            bottom_boundary = VIEWPORT_MARGIN
+            left_boundary = self.viewport_margin
+            right_boundary = self.window.width - self.viewport_margin
+            top_boundary = self.window.height - self.viewport_margin
+            bottom_boundary = self.viewport_margin
             arcade.draw_lrtb_rectangle_outline(left_boundary, right_boundary, top_boundary, bottom_boundary,
                                                arcade.color.RED, 2)
 
@@ -297,7 +300,9 @@ class ViewGame(arcade.View):
             if not self.game_started:
                 self.game_started = True
                 self.timer.start()
-                self.fisher.game_started = True
+                elements.make_duck(self.window.width-self.viewport_margin, self.window.height * 0.75, self.space,
+                                   self.sprite_list_pymunk, self.private_duck_list)
+                self.fisher.start(duck=self.private_duck_list, space=self.space, joints=self.joints)
                 print("Game started!")
 
     def on_update(self, delta_time):
@@ -326,8 +331,8 @@ class ViewGame(arcade.View):
             self.shape_being_dragged.shape.body.position = self.last_mouse_position
             self.shape_being_dragged.shape.body.velocity = 0, 0
 
-        self.fisher.on_update()
-        if self.game_started:
+        self.fisher.update()
+        if self.game_started and len(self.sprite_list_pymunk) > 0:
             self.scroll_to_player(self.sprite_list_pymunk[0])
 
         # Move sprites to where physics objects are
@@ -360,22 +365,22 @@ class ViewGame(arcade.View):
         # --- Manage Scrolling ---
 
         # Scroll left
-        left_boundary = self.view_left + VIEWPORT_MARGIN
+        left_boundary = self.view_left + self.viewport_margin
         if target_sprite.left < left_boundary:
             self.view_left -= left_boundary - target_sprite.left
 
         # Scroll right
-        right_boundary = self.view_left + self.window.width - VIEWPORT_MARGIN
+        right_boundary = self.view_left + self.window.width - self.viewport_margin
         if target_sprite.right > right_boundary:
             self.view_left += target_sprite.right - right_boundary
 
         # Scroll up
-        top_boundary = self.view_bottom + self.window.height - VIEWPORT_MARGIN
+        top_boundary = self.view_bottom + self.window.height - self.viewport_margin
         if target_sprite.top > top_boundary:
             self.view_bottom += target_sprite.top - top_boundary
 
         # Scroll down
-        bottom_boundary = self.view_bottom + VIEWPORT_MARGIN
+        bottom_boundary = self.view_bottom + self.viewport_margin
         if target_sprite.bottom < bottom_boundary:
             self.view_bottom -= bottom_boundary - target_sprite.bottom
 
