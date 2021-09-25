@@ -8,7 +8,7 @@ def zero_gravity(body, gravity, damping, dt):
     pymunk.Body.update_velocity(body, (0, 0), damping, dt)
 
 
-def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None, window=None):
+def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None, window=None, velocity=0):
     # With right mouse button, shoot a heavy coin fast.
     if instance_sprite_list is None:
         instance_sprite_list = []
@@ -18,11 +18,13 @@ def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None, window
     body = pymunk.Body(mass, moment)
     body.position = pymunk.Vec2d(x, y)
     # Speed of duck
-    if window is not None:
+    if window is not None and velocity == 0:
         if window.fullscreen:
             body.velocity = -1800, 0
         if not window.fullscreen:
             body.velocity = -1700, 0
+    elif velocity != 0:
+        body.velocity = velocity, 0
     else:
         body.velocity = -1800, 0
     shape = pymunk.Poly.create_box(body, (size, size))

@@ -289,7 +289,7 @@ class ViewGame(arcade.View):
             elements.make_duck(x + self.camera_sprites.position[0],
                                y + self.camera_sprites.position[1],
                                self.space, self.sprite_list_pymunk,
-                               self.window)
+                               self.private_duck_list, self.window)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == 1:
@@ -303,6 +303,7 @@ class ViewGame(arcade.View):
             self.shape_being_dragged.shape.body.position = self.last_mouse_position
             self.shape_being_dragged.shape.body.velocity = dx * 20, dy * 20
         self.event_manager.update_mouse_coords(x + self.camera_sprites.position[0], y + self.camera_sprites.position[1])
+        self.event_manager.on_mouse_motion()
 
     def on_key_press(self, symbol: int, modifiers: int):
         if self.mode_developer:

@@ -7,7 +7,7 @@ class Timer:
         self.total_time = 0.0
         self.game_cycle = 0.0
         self.game_event_time = 0
-        self.output = "00:00:00"
+        self.output = "Press space, click mouse or whatever."
         self.game_hour = 0
         self.game_hour_counter_started = False
         self.night_is_coming = True
@@ -61,4 +61,5 @@ class Timer:
             self.game_cycle = 0
 
         # Output to draw:
-        self.output = f"{minutes:02d}:{seconds:02d}"
+        if self.game_hour_counter_started:
+            self.output = f"{minutes:02d}:{seconds:02d}"
