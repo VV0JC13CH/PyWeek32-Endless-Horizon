@@ -67,6 +67,9 @@ class ViewGame(arcade.View):
         self.floor_height = 0
         self.bridge_position = (0.0, 0.0)
 
+        self.victory = False
+        self.game_over = False
+
         #
         self.progress = 0
 
@@ -111,8 +114,8 @@ class ViewGame(arcade.View):
         self.fisher = fisher.Fisher()
         self.private_duck_list = None
 
-    def on_setup(self):
-        self.mode_developer = True
+    def on_setup(self, sandbox=False):
+        self.mode_developer = sandbox
         self.game_started = False
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
@@ -127,6 +130,9 @@ class ViewGame(arcade.View):
         self.player_dragged = self.fisher
 
         self.static_lines_pymunk = []
+
+        self.victory = True
+        self.game_over = False
 
         # Timer
         self.timer.on_setup()
@@ -344,8 +350,6 @@ class ViewGame(arcade.View):
         elif symbol == arcade.key.RIGHT:
             pass
 
-
-
     def on_update(self, delta_time):
         start_time = timeit.default_timer()
 
@@ -398,6 +402,11 @@ class ViewGame(arcade.View):
         self.timer.on_update(delta_time)
 
         self.progress = (5333333 + self.camera_sprites.position[0]) / 5333333
+
+        if 0.9 < self.progress < 1.0:
+            self.victory = True
+        elif self.victory and self.progress > 1.0:
+            self.window.show_view(self.window.view_victory)
 
         self.processing_time = timeit.default_timer() - start_time
 

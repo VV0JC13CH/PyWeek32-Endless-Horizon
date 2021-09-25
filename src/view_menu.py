@@ -27,8 +27,8 @@ class ViewMenu(arcade.View):
         resume_button = arcade.gui.UIFlatButton(text="Resume game", width=200)
         self.v_box.add(resume_button.with_space_around(bottom=20))
 
-        scores_button = arcade.gui.UIFlatButton(text="Leaderboards", width=200)
-        self.v_box.add(scores_button.with_space_around(bottom=20))
+        sandbox_button = arcade.gui.UIFlatButton(text="Sandbox", width=200)
+        self.v_box.add(sandbox_button.with_space_around(bottom=20))
 
         settings_button = arcade.gui.UIFlatButton(text="Settings", width=200)
         self.v_box.add(settings_button.with_space_around(bottom=20))
@@ -39,7 +39,7 @@ class ViewMenu(arcade.View):
         # assign buttons:
         start_button.on_click = self.on_click_start
         resume_button.on_click = self.on_click_resume
-        scores_button.on_click = self.on_click_scores
+        sandbox_button.on_click = self.on_click_sandbox
         settings_button.on_click = self.on_click_settings
         quit_button.on_click = self.on_click_quit
 
@@ -62,8 +62,10 @@ class ViewMenu(arcade.View):
             arcade.get_window().view_game.on_setup()
         arcade.get_window().show_view(arcade.get_window().view_game)
 
-    def on_click_scores(self, event):
-        print("Scores:", event)
+    def on_click_sandbox(self, event):
+        print("Sandbox:", event)
+        arcade.get_window().view_game.on_setup(sandbox=True)
+        arcade.get_window().show_view(arcade.get_window().view_game)
 
     def on_click_settings(self, event):
         print("Settings:", event)

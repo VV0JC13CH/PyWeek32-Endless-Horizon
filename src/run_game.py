@@ -12,6 +12,7 @@ import music
 from view_game import ViewGame
 from view_menu import ViewMenu
 from view_settings import ViewSettings
+from view_victory import ViewVictory
 
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
@@ -54,6 +55,7 @@ class GlobalWindow(arcade.Window):
         self.view_game = None
         self.view_menu = None
         self.view_settings = None
+        self.view_victory = None
 
         # sound
         self.sounds = 0.0
@@ -66,6 +68,7 @@ class GlobalWindow(arcade.Window):
         self.view_game = ViewGame()
         self.view_menu = ViewMenu()
         self.view_settings = ViewSettings()
+        self.view_victory = ViewVictory()
 
         # sound
         self.sounds = SOUND
