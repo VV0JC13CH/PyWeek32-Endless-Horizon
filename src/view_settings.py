@@ -74,7 +74,7 @@ class ViewSettings(arcade.View):
 
     def on_click_music_down(self, event):
         print("on_click_music_down_button:", event)
-        arcade.get_window().change_volume_sounds(add=False)
+        arcade.get_window().change_volume_music(add=False)
 
     def on_click_menu(self, event):
         print("on_click_menu_button:", event)

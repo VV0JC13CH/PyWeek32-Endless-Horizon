@@ -101,11 +101,11 @@ class GlobalWindow(arcade.Window):
         print(f"Volume of sounds: {self.sounds}")
 
     def change_volume_music(self, add=True):
-        if add and self.music < 10:
-            self.music += 1
-        if not add and self.music > 0:
-            self.music -= 1
-        print(f"Volume of sounds: {self.music}")
+        if add:
+            self.music_manager.volume_up()
+        if not add:
+            self.music_manager.volume_down()
+        print(f"Volume of music: {self.music_manager.media_player.volume}")
 
     def go_to_menu(self):
         arcade.get_window().view_menu.manager.enable()
