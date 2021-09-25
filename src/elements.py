@@ -18,7 +18,7 @@ def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None):
     body = pymunk.Body(mass, moment)
     body.position = pymunk.Vec2d(x, y)
     # Speed of duck
-    body.velocity = -200000, 0
+    body.velocity = -2000, 0
     shape = pymunk.Poly.create_box(body, (size, size))
     shape.friction = 0.3
     # Make duck zero-gravity:
