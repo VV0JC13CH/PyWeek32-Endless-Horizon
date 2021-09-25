@@ -19,8 +19,8 @@ class Timer:
 
     def on_draw(self, pos_x, pos_y):
         arcade.draw_text(self.output,
-                         pos_x, pos_y - 50,
-                         arcade.color.WHITE, 100,
+                         pos_x, pos_y+10,
+                         arcade.color.BROWN_NOSE, 20,
                          anchor_x="center")
 
     def start(self):

@@ -14,7 +14,7 @@ import connection
 import fisher
 import sky
 
-SCREEN_TITLE = "Rod of Madness"
+SCREEN_TITLE = "Endless Horizon"
 
 """
 Key bindings:
@@ -84,6 +84,9 @@ class ViewGame(arcade.View):
         self.shape_being_dragged = None
         self.last_mouse_position = 0, 0
 
+        self.player_dragged = None
+        self.force_position = 0, 0
+
         self.processing_time_text = None
         self.draw_time = 0
         self.draw_time_text = None
@@ -121,6 +124,8 @@ class ViewGame(arcade.View):
         self.sprite_list_progress_bar = arcade.SpriteList()
         self.bridge_position = elements.make_bridge(self.sprite_list_static, self.window, self.space)
 
+        self.player_dragged = self.fisher
+
         self.static_lines_pymunk = []
 
         # Timer
@@ -143,9 +148,6 @@ class ViewGame(arcade.View):
         # Clouds
         self.sprite_list_clouds = arcade.SpriteList()
         sky.setup_clouds(self.sprite_list_clouds)
-
-        # Setup progress bar
-        elements.setup_progress_bar(self.sprite_list_progress_bar)
 
         # Setup sea:
         elements.setup_sea(self.window, self.space,
@@ -211,14 +213,14 @@ class ViewGame(arcade.View):
         if self.mode_developer:
             # Camera
             output = f"Processing time: {self.processing_time:.3f}"
-            arcade.draw_text(output, 20, self.window.height - 20, arcade.color.WHITE)
+            arcade.draw_text(output, 20, self.window.height - 20, arcade.color.SILVER)
             output = f"Drawing time: {self.draw_time:.3f}"
-            arcade.draw_text(output, 20, self.window.height - 40, arcade.color.WHITE)
+            arcade.draw_text(output, 20, self.window.height - 40, arcade.color.SILVER)
             self.draw_time = timeit.default_timer() - draw_start_time
             output = f"Mode: {self.mode}"
-            arcade.draw_text(output, 20, self.window.height - 60, arcade.color.WHITE)
+            arcade.draw_text(output, 20, self.window.height - 60, arcade.color.SILVER)
             output = f"Physics: {self.physics}"
-            arcade.draw_text(output, 20, self.window.height - 80, arcade.color.WHITE)
+            arcade.draw_text(output, 20, self.window.height - 80, arcade.color.SILVER)
             # Draw the GUI
             arcade.draw_rectangle_filled(self.window.width // 2, 20, self.window.width, 40, arcade.color.ALMOND)
             text = f"Camera position: ({self.camera_sprites.position[0]:5.1f}, {self.camera_sprites.position[1]:5.1f})"
@@ -232,9 +234,9 @@ class ViewGame(arcade.View):
             top_boundary = self.window.height - self.viewport_margin
             bottom_boundary = self.viewport_margin
             arcade.draw_lrtb_rectangle_outline(left_boundary, right_boundary, top_boundary, bottom_boundary,
-                                               arcade.color.RED, 2)
+                                               arcade.color.GREEN, 2)
 
-        self.timer.on_draw(self.window.width // 2, self.window.height // 2)
+        self.timer.on_draw(self.window.width // 2, self.window.height - 80)
 
     def on_mouse_press(self, x, y, button, modifiers):
 
@@ -320,7 +322,29 @@ class ViewGame(arcade.View):
                 elements.make_duck(self.window.width-self.viewport_margin, self.window.height * 0.75, self.space,
                                    self.sprite_list_pymunk, self.private_duck_list)
                 self.fisher.start(duck=self.private_duck_list, space=self.space, joints=self.joints)
+                # Setup progress bar
+                elements.setup_progress_bar(self.sprite_list_progress_bar)
                 print("Game started!")
+        elif symbol == arcade.key.UP:
+            pass
+        elif symbol == arcade.key.DOWN:
+            pass
+        elif symbol == arcade.key.LEFT:
+            pass
+        elif symbol == arcade.key.RIGHT:
+            pass
+
+    def on_key_release(self, symbol: int, modifiers: int):
+        if symbol == arcade.key.UP:
+            pass
+        elif symbol == arcade.key.DOWN:
+            pass
+        elif symbol == arcade.key.LEFT:
+            pass
+        elif symbol == arcade.key.RIGHT:
+            pass
+
+
 
     def on_update(self, delta_time):
         start_time = timeit.default_timer()

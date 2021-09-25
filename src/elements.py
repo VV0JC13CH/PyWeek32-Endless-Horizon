@@ -30,6 +30,7 @@ def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None):
 
 
 def make_ballon(x, y, space, global_sprite_list, instance_sprite_list=None):
+    # It should be baloon, but it's just next crate
     if instance_sprite_list is None:
         instance_sprite_list = []
     size = 20
@@ -104,6 +105,12 @@ def make_ground(sprite_list, window):
         ground.center_x = window.width - ground.width * i
         ground.center_y = 0 + ground.height / 2
         sprite_list.append(ground)
+    for i in range(0,200):
+        ground = arcade.Sprite(texture=assets.ground_texture)
+        # game is over after -5333333 (its end of level)
+        ground.center_x = -5333333 - ground.width * i
+        ground.center_y = 0 + ground.height / 2
+        sprite_list.append(ground)
 
 
 def make_crate(x, y, space, global_sprite_list, instance_sprite_list=None):
@@ -128,7 +135,7 @@ def setup_progress_bar(sprite_list_progress_bar):
 
 def draw_progress_bar(fisher, window, progress):
     if fisher.connected_to_duck:
-        arcade.draw_texture_rectangle(center_x=window.width / 2 - (540 - progress * 540),
+        arcade.draw_texture_rectangle(center_x=window.width / 2 - (540 - progress * 540) + (270 - progress * 270),
                                       center_y=window.height - 60,
                                       width=540 * progress,
                                       height=30,
@@ -138,6 +145,12 @@ def draw_progress_bar(fisher, window, progress):
                                       width=600,
                                       height=60,
                                       texture=assets.progress_bar_texture)
+        arcade.draw_texture_rectangle(center_x=window.width / 2 - 265 + progress * 265 * 2,
+                                      center_y=window.height - 60,
+                                      width=32,
+                                      height=64,
+                                      texture=assets.log_texture
+                                      )
         sprite = assets.mini_island_sprite
         sprite.center_x = window.width / 2 - 350
         sprite.center_y = window.height - 60

@@ -117,6 +117,9 @@ class Fisher(arcade.SpriteList):
             self.space.add(vein)
             self.joints.append(vein)
             window.music_manager.start_music_triggered()
+            if not window.music_manager.media_player.playing:
+                # Yeah I know...but works.
+                window.music_manager.start_music_triggered()
 
         elif self.connected_to_duck:
             # Update position of sprite and shape
