@@ -108,7 +108,6 @@ class GlobalWindow(arcade.Window):
         print(f"Volume of music: {self.music_manager.media_player.volume}")
 
     def go_to_menu(self):
-        arcade.get_window().view_menu.manager.enable()
         self.show_view(self.view_menu)
 
     def on_key_press(self, key, modifiers):
