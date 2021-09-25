@@ -93,6 +93,8 @@ class ViewSettings(arcade.View):
         # Registers handlers for GUI button clicks, etc.
         # We don't really use them in this example.
         self.manager.enable()
+        self.window.set_mouse_visible(visible=True)
+
 
     def on_hide_view(self):
         # This unregisters the manager's UI handlers,
