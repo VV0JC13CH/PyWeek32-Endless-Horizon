@@ -68,7 +68,6 @@ class ViewSettings(arcade.View):
         print("on_click_volume_down_button:", event)
         arcade.get_window().change_volume_sounds(add=False)
 
-
     def on_click_music_up(self, event):
         print("on_click_music_up_button:", event)
         arcade.get_window().change_volume_music()

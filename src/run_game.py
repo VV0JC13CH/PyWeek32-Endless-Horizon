@@ -8,6 +8,7 @@ import arcade
 import os
 
 import assets
+import music
 from view_game import ViewGame
 from view_menu import ViewMenu
 from view_settings import ViewSettings
@@ -15,8 +16,8 @@ from view_settings import ViewSettings
 SCREEN_WIDTH = 1200
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Endless Horizon"
-SOUND = 7
-MUSIC = 5
+SOUND = 1.0
+MUSIC = 0.6
 
 
 """
@@ -55,8 +56,9 @@ class GlobalWindow(arcade.Window):
         self.view_settings = None
 
         # sound
-        self.sounds = SOUND
-        self.music = MUSIC
+        self.sounds = 0.0
+        self.music_manager = music.MusicPlayer()
+        self.music = 0.0
 
     def setup(self):
 
@@ -64,6 +66,11 @@ class GlobalWindow(arcade.Window):
         self.view_game = ViewGame()
         self.view_menu = ViewMenu()
         self.view_settings = ViewSettings()
+
+        # sound
+        self.sounds = SOUND
+        self.music_manager = music.MusicPlayer(volume=self.music)
+        self.music = MUSIC
 
         # background
         self.background_color = assets.backgrounds[0]

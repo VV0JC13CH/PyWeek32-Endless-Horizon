@@ -63,7 +63,7 @@ class Fisher(arcade.SpriteList):
                              4)
         self.draw()
 
-    def update(self):
+    def during_update(self, window):
         if self.game_started and not self.static_animations_finished:
             # Move static sprites from texture 3-19 before launch of game
             for sprite in self:
@@ -118,6 +118,7 @@ class Fisher(arcade.SpriteList):
             vein = pymunk.PinJoint(self.shape.body, self.private_duck[0].pymunk_shape.body)
             self.space.add(vein)
             self.joints.append(vein)
+            window.music_manager.start_music_triggered()
 
         elif self.connected_to_duck:
             # Update position of sprite and shape

@@ -81,3 +81,6 @@ backgrounds = [
     (0, 19, 25),
     (0, 19, 25)
 ]
+
+# music
+house_music_path = path_to_string("sfx", "house_loop.wav")

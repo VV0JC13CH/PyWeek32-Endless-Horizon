@@ -335,7 +335,7 @@ class ViewGame(arcade.View):
             self.shape_being_dragged.shape.body.position = self.last_mouse_position
             self.shape_being_dragged.shape.body.velocity = 0, 0
 
-        self.fisher.update()
+        self.fisher.during_update(self.window)
         if self.game_started and len(self.sprite_list_pymunk) > 0:
             self.scroll_to_player(self.sprite_list_pymunk[0])
 
