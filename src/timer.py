@@ -44,8 +44,8 @@ class Timer:
         seconds_100s = int((self.total_time - seconds) * 100)
 
         # "Game-hours"
-        # New background every 12s? So progress will be visible for a player
-        if int(self.game_cycle) // 12 >= 1 and self.game_hour_counter_started:
+        # New background every 20s? So progress will be visible for a player
+        if int(self.game_cycle) // 20 >= 1 and self.game_hour_counter_started:
             print("game cycle", self.game_hour)
             if self.night_is_coming and self.game_hour <= 23:
                 self.game_hour += 1

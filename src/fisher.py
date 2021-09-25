@@ -27,7 +27,7 @@ class Fisher(arcade.SpriteList):
         self.rod_angle = 45
         self.shape = None
 
-    def on_setup(self, bridge_x, bridge_y, space, anim_speed=4):
+    def on_setup(self, bridge_x, bridge_y, space, anim_speed=20):
         for sprite in self:
             sprite.kill()
         self.position = bridge_x, bridge_y
@@ -67,6 +67,7 @@ class Fisher(arcade.SpriteList):
         if self.game_started and not self.static_animations_finished:
             # Move static sprites from texture 3-19 before launch of game
             for sprite in self:
+                self.anim_speed = 4
                 self.anim_speed_counter -= 1
                 if self.anim_speed_counter == 0:
                     if sprite.cur_texture_index in range(0,1):
