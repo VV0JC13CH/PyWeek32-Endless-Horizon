@@ -131,7 +131,7 @@ class ViewGame(arcade.View):
 
         self.static_lines_pymunk = []
 
-        self.victory = True
+        self.victory = False
         self.game_over = False
 
         # Timer
@@ -149,7 +149,7 @@ class ViewGame(arcade.View):
         self.view_left = 0
         self.view_bottom = 0
 
-        self.progress = 0
+        self.progress = 1
 
         # Clouds
         self.sprite_list_clouds = arcade.SpriteList()
@@ -400,13 +400,14 @@ class ViewGame(arcade.View):
 
         # Save the time it took to do this.
         self.timer.on_update(delta_time)
+        if self.camera_sprites.position[0] < 0:
+            self.progress = (5333333 + self.camera_sprites.position[0]) / 5333333
 
-        self.progress = (5333333 + self.camera_sprites.position[0]) / 5333333
-
-        if 0.9 < self.progress < 1.0:
+        if self.progress < 0.1:
             self.victory = True
-        elif self.victory and self.progress > 1.0:
+        if self.victory and self.progress < 0.0:
             self.window.show_view(self.window.view_victory)
+        print(self.victory, self.progress)
 
         self.processing_time = timeit.default_timer() - start_time
 
