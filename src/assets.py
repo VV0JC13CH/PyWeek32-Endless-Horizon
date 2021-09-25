@@ -42,6 +42,15 @@ for x in range(1,19,1):
 fisher_static_sprite = arcade.Sprite(texture=fisher_static_textures[0])
 fisher_static_sprite.textures = fisher_static_textures
 
+# Clouds:
+clouds_textures = []
+for x in range(1,6,1):
+    for y in range(1,6,1):
+        texture = arcade.load_texture(path_to_string("gfx", "clouds"+str(y)+".png"))
+        clouds_textures.append(texture)
+clouds_sprite = arcade.Sprite(texture=clouds_textures[0])
+clouds_sprite.textures = clouds_textures
+
 # Pallet: https://colorswall.com/palette/24326/
 # Each index means another game_cycle aka hours
 backgrounds = [

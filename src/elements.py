@@ -55,23 +55,25 @@ def setup_sea(window, space, global_sprite_sea_list, global_static_lines_list):
                                center_y=assets.sea_textures[0].height / 2)
         global_sprite_sea_list.append(sprite)
         body = pymunk.Body(body_type=pymunk.Body.STATIC)
-        shape = pymunk.Segment(body, (pos_x, sprite.height), (pos_x + sprite.width, sprite.height), 0.0)
+        shape = pymunk.Segment(body, (pos_x*999999999*i, sprite.height), (pos_x*i + sprite.width, sprite.height), 0.0)
         shape.friction = 10
         space.add(shape, body)
         global_static_lines_list.append(shape)
+        print("ODLEG", pos_x*999999999*i)
 
 
-def update_sea(sprite, window, space, global_static_lines_list):
+def update_sea(sprite, window, space, camera):
     # Moving sprites to left:
     sea_chunks_req = int(window.width * 3 / sprite.width)
     pos_x = sea_chunks_req * sprite.width
     sprite.center_x -= pos_x
+
     # Generator of static lines:
-    body = pymunk.Body(body_type=pymunk.Body.STATIC)
-    shape = pymunk.Segment(body, (sprite.center_x, sprite.height), (sprite.center_x + sprite.width, sprite.height), 0.0)
-    shape.friction = 10
-    space.add(shape, body)
-    global_static_lines_list.append(shape)
+    # body = pymunk.Body(body_type=pymunk.Body.STATIC)
+    # shape = pymunk.Segment(body, (sprite.center_x, sprite.height), (sprite.center_x + sprite.width, sprite.height), 0.0)
+    # shape.friction = 10
+    # space.add(shape, body)
+    # global_static_lines_list.append(shape)
 
 
 def kill_old_instances(sprite, space):

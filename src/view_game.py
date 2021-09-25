@@ -61,6 +61,7 @@ class ViewGame(arcade.View):
         self.sprite_list_pymunk_static = None
         self.sprite_list_static = None
         self.sprite_list_sea = None
+        self.sprite_list_clouds = None
         self.static_lines_pymunk = []
         self.floor_height = 0
         self.bridge_position = (0.0, 0.0)
@@ -132,8 +133,9 @@ class ViewGame(arcade.View):
         self.view_left = 0
         self.view_bottom = 0
 
-        # Test camera:
-
+        # Clouds
+        self.sprite_list_clouds = arcade.SpriteList()
+        sky.setup_clouds(self.sprite_list_clouds)
 
         # Setup sea:
         elements.setup_sea(self.window, self.space,
@@ -158,6 +160,9 @@ class ViewGame(arcade.View):
 
         # Select the (unscrolled) camera for our GUI
         self.camera_sprites.use()
+
+        # Draw clouds:
+        self.sprite_list_clouds.draw()
 
         # Draw player
         self.fisher.on_draw()
@@ -320,8 +325,7 @@ class ViewGame(arcade.View):
         # Sea chunks updates:
         for sprite in self.sprite_list_sea:
             if sprite.center_x >= self.camera_sprites.position[0] + self.window.width * 2 + sprite.width:
-                elements.update_sea(sprite, self.window, self.space, self.static_lines_pymunk)
-
+                elements.update_sea(sprite, self.window, self.space, self.camera_sprites)
         # Update physics
         self.space.step(1 / 80.0)
 
@@ -351,6 +355,7 @@ class ViewGame(arcade.View):
                     sprite.anim_speed_counter = sprite.anim_speed
                 sprite.texture = sprite.textures[sprite.cur_texture_index]
         sky.change_sky(self.timer.game_hour)
+        sky.change_clouds(self.sprite_list_clouds, self.timer.game_hour, self.window, self.camera_sprites)
 
         # Save the time it took to do this.
         self.timer.on_update(delta_time)
