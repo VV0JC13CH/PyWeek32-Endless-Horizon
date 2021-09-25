@@ -276,7 +276,8 @@ class ViewGame(arcade.View):
         elif button == 4 and self.mode_developer:
             elements.make_duck(x + self.camera_sprites.position[0],
                                y + self.camera_sprites.position[1],
-                               self.space, self.sprite_list_pymunk)
+                               self.space, self.sprite_list_pymunk,
+                               self.window)
 
     def on_mouse_release(self, x, y, button, modifiers):
         if button == 1:
@@ -326,7 +327,7 @@ class ViewGame(arcade.View):
                 self.game_started = True
                 self.timer.start()
                 elements.make_duck(self.window.width-self.viewport_margin, self.window.height * 0.75, self.space,
-                                   self.sprite_list_pymunk, self.private_duck_list)
+                                   self.sprite_list_pymunk, self.private_duck_list, self.window)
                 self.fisher.start(duck=self.private_duck_list, space=self.space, joints=self.joints)
                 # Setup progress bar
                 elements.setup_progress_bar(self.sprite_list_progress_bar)
@@ -407,7 +408,6 @@ class ViewGame(arcade.View):
             self.victory = True
         if self.victory and self.progress < 0.0:
             self.window.show_view(self.window.view_victory)
-        print(self.victory, self.progress)
 
         self.processing_time = timeit.default_timer() - start_time
 

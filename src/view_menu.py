@@ -4,6 +4,7 @@ and the three ways to process button events.
 """
 import arcade
 import arcade.gui
+import assets
 
 
 class ViewMenu(arcade.View):
@@ -77,6 +78,15 @@ class ViewMenu(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_texture_rectangle(center_x=self.window.width / 2,
+                                      center_y=self.window.height / 2,
+                                      width=assets.bg_menu.width * self.window.height / assets.bg_menu.height,
+                                      height=self.window.height,
+                                      texture=assets.bg_menu)
+        arcade.draw_text("Endless Horizon",
+                         self.window.width // 2, self.window.height - 250,
+                         arcade.color.BLACK, 80,
+                         anchor_x="center")
         self.manager.draw()
 
     def on_show_view(self):

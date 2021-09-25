@@ -5,10 +5,10 @@ import assets
 
 
 def zero_gravity(body, gravity, damping, dt):
-    pymunk.Body.update_velocity(body, (0,0), damping, dt)
+    pymunk.Body.update_velocity(body, (0, 0), damping, dt)
 
 
-def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None):
+def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None, window=None):
     # With right mouse button, shoot a heavy coin fast.
     if instance_sprite_list is None:
         instance_sprite_list = []
@@ -18,7 +18,13 @@ def make_duck(x, y, space, global_sprite_list, instance_sprite_list=None):
     body = pymunk.Body(mass, moment)
     body.position = pymunk.Vec2d(x, y)
     # Speed of duck
-    body.velocity = -2000, 0
+    if window is not None:
+        if window.fullscreen:
+            body.velocity = -2000, 0
+        if not window.fullscreen:
+            body.velocity = -1700, 0
+    else:
+        body.velocity = -1800, 0
     shape = pymunk.Poly.create_box(body, (size, size))
     shape.friction = 0.3
     # Make duck zero-gravity:
@@ -51,7 +57,7 @@ def setup_sea(window, space, global_sprite_sea_list, global_static_lines_list):
     image_width = assets.sea_textures[0].width
     sea_chunks_req = int(window.width * 3 / image_width)
     for i in range(0, sea_chunks_req):
-        pos_x = window.width-(i*image_width + image_width) + image_width * 2
+        pos_x = window.width - (i * image_width + image_width) + image_width * 2
         sprite = arcade.Sprite(texture=assets.sea_textures[0], center_x=pos_x + image_width / 2,
                                center_y=assets.sea_textures[0].height / 2)
         global_sprite_sea_list.append(sprite)
@@ -100,12 +106,12 @@ def make_bridge(sprite_list, window, space):
 
 
 def make_ground(sprite_list, window):
-    for i in range(0,3):
+    for i in range(0, 3):
         ground = arcade.Sprite(texture=assets.ground_texture)
         ground.center_x = window.width - ground.width * i
         ground.center_y = 0 + ground.height / 2
         sprite_list.append(ground)
-    for i in range(0,200):
+    for i in range(0, 200):
         ground = arcade.Sprite(texture=assets.ground_texture)
         # game is over after -5333333 (its end of level)
         ground.center_x = -5333333 - ground.width * i

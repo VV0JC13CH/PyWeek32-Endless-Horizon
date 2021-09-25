@@ -104,6 +104,7 @@ mini_island_sprite.textures = [mini_island_texture_1,
 log_texture = arcade.load_texture(path_to_string("gfx", "log16x32.png"), width=16, height=32)
 
 bg_victory = arcade.load_texture(path_to_string("gfx", "bg_victory.png"))
+bg_menu = arcade.load_texture(path_to_string("gfx", "bg_menu.png"))
 
 # music
 house_music_path = path_to_string("sfx", "house_loop.wav")
