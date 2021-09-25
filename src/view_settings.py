@@ -13,7 +13,6 @@ class ViewSettings(arcade.View):
         # --- Required for all code that uses UI element,
         # a UIManager to handle the UI.
         self.manager = arcade.gui.UIManager()
-        self.manager.disable()
 
         # Set background color
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
@@ -80,10 +79,18 @@ class ViewSettings(arcade.View):
 
     def on_click_menu(self, event):
         print("on_click_menu_button:", event)
-        self.manager.disable()
-        arcade.get_window().view_menu.manager.enable()
         arcade.get_window().show_view(arcade.get_window().view_menu)
 
     def on_draw(self):
         arcade.start_render()
         self.manager.draw()
+
+    def on_show_view(self):
+        # Registers handlers for GUI button clicks, etc.
+        # We don't really use them in this example.
+        self.manager.enable()
+
+    def on_hide_view(self):
+        # This unregisters the manager's UI handlers,
+        # Handlers respond to GUI button clicks, etc.
+        self.manager.disable()
