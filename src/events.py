@@ -25,7 +25,7 @@ TEXT_EVENTS = [(0, ""), (1, "HELLO"), (2, "THIS IS..."), (3, "PyWeek32 Entry"), 
                (85, ""), (87, "Road is long"), (88, "or maybe the sea?"), (89, ""),
                (90, "for sure"), (91, "sea is the limit"), (92, ""), (100, "no more content ahead"),
                (101, "really"), (102, ""), (105, "only boxes"), (106, ""), (109, "and ducks"),
-               (110, ""), (120, "bye"), (121, "I have to go"), (122, "Once again, thanks for playing."),
+               (110, ""), (120, ""), (121, "I have to go"), (122, "Once again, thanks for playing."),
                (123, "")]
 
 
