@@ -10,14 +10,16 @@ TEXT_EVENTS = [(0, ""), (1, "HELLO"), (2, "THIS IS..."), (3, "PyWeek32 Entry"), 
                (17, ""), (18, "What was that?"), (19, ""),
                (20, "I didn't mention something before"), (21, "Something important"), (22, "You can't loose"),
                (23, "but!"), (24, "It's possible to win!"), (25, ""),
-               (28, "Watch out. More ducks!"), (29, ""), (30, "It was close!"),
+               (28, "Ducks ahead"), (29, "Hold your mouse"), (30, ""),
                (31, "Yeah...you still wanna play?"), (32, "This game is unfinished"),
                (33, "But at the end"), (34, "There is nice image"), (35, "I mean"),
                (36, "victory screen"), (37, ""), (38, "No, no more content."),
-               (39, "only victory image"), (40, "you won't see it to be honest"),
-               (41, "it's possible, as I said..."), (42, ""),
-               (44, "btw"), (45, "Thanks for playing."), (46, "I appreciate it"),
-               (47, "And now go try another game!"),(48, "")]
+               (39, "only victory image"), (40, "to be honest"),
+               (41, "you won't see it "), (42, "you won't last"), (43, "but"),
+               (44, "time will show"), (45, ""),
+               (46, "btw"), (47, "Thanks for playing."), (48, "I appreciate it"),
+               (49, ""), (50, "It took me one hour"), (51, "To make this cursor disappearing"),
+               (52, "It's not magic"), (53, "only hard work"), (54, "")]
 
 
 class EventManager:
@@ -37,19 +39,26 @@ class EventManager:
         self.scripted_events = []
         self.mouse_visible = True
         self.spawn_ducks = False
+        self.font_color = arcade.color.BLACK
 
     def setup(self):
         self.text_event = TEXT_EVENTS[0][1]
         self.game_event_id = 0
+        self.font_color = arcade.color.BLACK
         self.last_event_position = self.window.view_game.camera_sprites.position[0]
         self.last_scripted_event_position = self.window.view_game.camera_sprites.position[0]
         self.mouse_visible = True
         self.script_executed = False
         self.spawn_ducks = False
-        self.scripted_events = [(14, "1_CURSOR"),
+        self.scripted_events = [(12, "1_CURSOR"),
+                                (13, "1_CURSOR"),
+                                (14, "1_CURSOR"),
                                 (15, "1_CURSOR"),
                                 (17, "2_SPAWN_BOXES"),
-                                (29, "3_SPAWN_DUCKS")]
+                                (29, "3_SPAWN_DUCKS"),
+                                (51, "1_CURSOR"),
+                                (53, "1_CURSOR"),
+                                ]
 
     def on_update(self):
         if int(-self.window.view_game.camera_sprites.position[0] + self.last_event_position) >= 10000:
@@ -74,6 +83,10 @@ class EventManager:
                 elif self.game_event_id != event[0]:
                     # None of the scripts was executed
                     self.script_executed = False
+        if self.window.view_game.timer.game_hour > 16:
+            self.font_color = arcade.color.WHITE_SMOKE
+        else:
+            self.font_color = arcade.color.BLACK
 
     def update_mouse_coords(self, x, y):
         self.mouse_world_x = x
@@ -82,38 +95,36 @@ class EventManager:
     def on_draw(self):
         arcade.draw_text(text=str(self.text_event),
                          start_x=self.window.width // 2, start_y=self.window.height // 2 - 50,
-                         color=arcade.color.BLACK, font_size=50,
+                         color=self.font_color, font_size=50,
                          anchor_x="center")
 
     def cursor_disappearing(self):
         self.mouse_visible = not self.mouse_visible
         print("Mouse:", self.mouse_visible)
         self.window.set_mouse_visible(visible=self.mouse_visible)
-        self.window.set_mouse_position(x=int(random.randrange(self.window.width * 0.25, self.window.width * 0.5)),
-                                       y=int(random.randrange(self.window.height * 0.4, self.window.height * 0.9))
-                                       )
+        self.window._mouse_visible = self.mouse_visible
 
     def spawn_boxes(self):
-        elements.make_crate(self.mouse_world_x+100-200,
-                            self.mouse_world_y+100,
+        elements.make_crate(self.window.view_game.camera_sprites.position[0],
+                            self.mouse_world_y + 100,
                             self.space, self.global_sprite_list)
-        elements.make_crate(self.mouse_world_x-100-200,
-                            self.mouse_world_y-100,
+        elements.make_crate(self.window.view_game.camera_sprites.position[0],
+                            self.mouse_world_y - 100,
                             self.space, self.global_sprite_list)
-        elements.make_crate(self.mouse_world_x+100-200,
-                            self.mouse_world_y-100,
+        elements.make_crate(self.window.view_game.camera_sprites.position[0],
+                            self.mouse_world_y - 100,
                             self.space, self.global_sprite_list)
-        elements.make_crate(self.mouse_world_x-100-200,
-                            self.mouse_world_y+100,
+        elements.make_crate(self.window.view_game.camera_sprites.position[0],
+                            self.mouse_world_y + 100,
                             self.space, self.global_sprite_list)
-        elements.make_crate(self.mouse_world_x-200,
+        elements.make_crate(self.window.view_game.camera_sprites.position[0],
                             self.mouse_world_y,
                             self.space, self.global_sprite_list)
 
     def spawn_duck(self, velocity):
-        elements.make_duck(x=int(self.mouse_world_x),
-                           y=int(random.randrange(self.window.height * 0.4, self.window.height * 0.9)),
-                           global_sprite_list = self.global_sprite_list,
+        elements.make_duck(x=self.window.view_game.camera_sprites.position[0],
+                           y=int(random.randrange(self.window.height * 0.2, self.window.height * 0.5)),
+                           global_sprite_list=self.global_sprite_list,
                            space=self.space,
                            window=self.window, velocity=velocity)
 

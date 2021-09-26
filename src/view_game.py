@@ -429,6 +429,7 @@ class ViewGame(arcade.View):
         self.event_manager.on_update()
 
         self.processing_time = timeit.default_timer() - start_time
+        self.window.set_mouse_visible(visible=self.event_manager.mouse_visible)
 
     def scroll_to_player(self, target_sprite):
         """
